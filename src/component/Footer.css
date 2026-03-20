@@ -10,6 +10,7 @@
   margin: 0 auto;
   width: 100%;
   max-width: 80rem;
+  padding: 0 20px;
 }
 
 /* Основное содержимое */
@@ -17,533 +18,237 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 30px;
-  padding-bottom: 30px;
+  margin-bottom: 50px;
+  gap: 40px;
 }
 
 /* Левая колонка с лого */
 .footer-logo-container {
-  padding-left: 37px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.footer-logo {
+  max-height: 83px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Навигация и контакты - центральная часть */
+.footer-nav-contacts {
   flex: 1;
   display: flex;
-  align-items: center;
-  height: 100%;
-}
-
-.footer-logo-placeholder {
-  background-color: #2d2d44;
-  padding: 15px 25px;
-  border-radius: 8px;
-  display: inline-block;
-}
-
-.footer-logo-text {
-  font-size: 24px;
-  font-weight: 700;
-  color: #4cc9f0;
-  letter-spacing: 1px;
-}
-
-/* Центральный контейнер */
-.nav-contacts-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Контакты */
-.contacts-wrapper {
-  font-family: 'Kontora';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 15px;
-  line-height: 20px;
-  margin-top: 20px;
-  text-align: center;
-}
-
-.footer-nav-container {
-  display: flex;
   justify-content: center;
-  gap: 66px;
-  padding-right: 50px;
-}
-
-/* Навигационные ссылки */
-.footer-nav-links {
-  display: flex;
   gap: 66px;
   flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 20px;
 }
 
-/* Заголовок "Контакты" */
-.contacts-header {
-  font-size: 15px;
-  font-weight: 700;
-  color: #ffffff;
-  margin: 10px 0 15px 0;
-  text-align: center;
+/* Блок навигации */
+.footer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.footer-nav-link {
-  color: #ffffff;
-  text-decoration: none;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-  position: relative;
-  white-space: nowrap;
+.footer-nav-title {
   font-family: 'Kontora';
   font-style: normal;
   font-weight: 700;
   font-size: 15px;
   line-height: 20px;
+  color: #ffffff;
+  margin: 0 0 10px 0;
+  letter-spacing: 0.5px;
 }
 
-/* Правая колонка контактов */
-.footer-contacts-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 15px;
-  min-height: 100px;
-  padding-top: 40px;
-}
-
-.contact-item {
+.footer-nav-list {
+  list-style: none;
+  padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  gap: 12px;
+}
+
+.footer-nav-list li {
+  margin: 0;
+  padding: 0;
+}
+
+.footer-nav-link {
+  font-family: 'Kontora';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.footer-nav-link:hover {
+  color: #ffffff;
+  opacity: 1;
+  transform: translateX(3px);
+}
+
+/* Контакты в блоке */
+.contact-item {
+  display: flex;
+  flex-direction: column;
   gap: 5px;
 }
 
-.label {
+.contact-label-footer {
+  font-family: 'Kontora';
+  font-style: normal;
+  font-weight: 400;
   font-size: 15px;
-  color: #888888;
-  font-weight: 100;
+  line-height: 16px;
+  color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  white-space: nowrap;
 }
 
 .contact-link-footer {
+  font-family: 'Kontora';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 18px;
   color: #ffffff;
   text-decoration: none;
-  font-size: 10px;
-  font-weight: 400;
-  white-space: nowrap;
+  transition: all 0.3s ease;
 }
 
-/* Социальные сети */
+.contact-link-footer:hover {
+  opacity: 0.8;
+  transform: translateX(3px);
+}
+
+/* Правая колонка с соцсетями */
 .footer-social {
-  padding-left: 47px;
+  flex: 0 0 auto;
   display: flex;
-  margin-bottom: 30px;
-}
-
-.social_img {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .social-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
-  background-color: #2d2d44;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
-  color: #ffffff;
-  text-decoration: none;
   transition: all 0.3s ease;
 }
 
-.social-icon {
-  font-size: 18px;
-  font-weight: 700;
+.social-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
 }
 
+.social_img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+/* Нижняя часть */
 .footer-bottom {
-  text-align: left;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   padding-top: 20px;
-  border-top: 1px solid #ffffff;
+  text-align: left;
 }
 
 .copyright {
-  padding-left: 27px;
-  color: #ffffff;
-  font-size: 10px;
-  line-height: 1;
-  margin: 0;
   font-family: 'Kontora';
   font-style: normal;
   font-weight: 400;
+  font-size: 10px;
+  line-height: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  text-align: center;
 }
 
-/* Для реального логотипа */
-.footer-logo {
-  max-height: 83px;
-  width: auto;
-}
-
-.contact-column {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-}
-
-/* =========================== */
-/* АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНОВ */
-/* =========================== */
-
-/* Планшеты (768px - 1024px) */
+/* Адаптивность */
 @media (max-width: 1024px) {
   .footer-content {
     flex-direction: column;
     align-items: center;
-    gap: 30px;
-  }
-  
-  .footer-logo-container {
-    padding-left: 0;
-    justify-content: center;
-  }
-  
-  .footer-nav-container {
-    padding-right: 0;
     gap: 40px;
   }
-  
-  .footer-nav-links {
-    gap: 40px;
+
+  .footer-nav-contacts {
+    width: 100%;
+    justify-content: space-around;
   }
-  
+
   .footer-social {
-    padding-left: 0;
     justify-content: center;
-  }
-  
-  .footer-contacts-container {
-    align-items: center;
-    padding-top: 0;
-  }
-  
-  .contact-item {
-    align-items: center;
-    text-align: center;
   }
 }
 
-/* Большие телефоны (576px - 768px) */
 @media (max-width: 768px) {
-  .footer {
-    padding: 30px 0 15px;
-  }
-  
-  .footer-content {
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-  }
-  
-  .footer-nav-container {
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .footer-nav-links {
-    gap: 30px;
-    margin-top: 15px;
-  }
-  
-  .footer-nav-link {
-    font-size: 14px;
-  }
-  
-  .contacts-wrapper,
-  .contacts-header {
-    font-size: 14px;
-  }
-  
-  .label {
-    font-size: 13px;
-  }
-  
-  .contact-link-footer {
-    font-size: 12px;
-  }
-  
-  .footer-social {
-    margin-bottom: 20px;
-  }
-  
-  .copyright {
-    padding-left: 0;
-    text-align: center;
-    font-size: 11px;
-  }
-}
-
-/* Средние телефоны (425px - 576px) */
-@media (max-width: 576px) {
   .footer-container {
     padding: 0 15px;
   }
-  
-  .footer-logo-placeholder {
-    padding: 12px 20px;
-  }
-  
-  .footer-logo-text {
-    font-size: 20px;
-  }
-  
-  .footer-nav-links {
+
+  .footer-nav-contacts {
     flex-direction: column;
-    gap: 20px;
     align-items: center;
-  }
-  
-  .footer-nav-link {
-    font-size: 13px;
-    white-space: normal;
-    text-align: center;
-    padding: 8px 15px;
-    border-radius: 20px;
-  }
-  
-  .footer-contacts-container {
-    gap: 10px;
-  }
-  
-  .contact-item {
-    gap: 3px;
-  }
-  
-  .label {
-    font-size: 12px;
-  }
-  
-  .contact-link-footer {
-    font-size: 11px;
-  }
-  
-  .social-link {
-    width: 45px;
-    height: 45px;
-  }
-  
-  .social_img {
-    width: 25px;
-    height: 25px;
-  }
-}
-
-/* Маленькие телефоны (375px - 425px) */
-@media (max-width: 425px) {
-  .footer {
-    padding: 25px 0 10px;
-  }
-  
-  .footer-container {
-    padding: 0 10px;
-  }
-  
-  .footer-logo-placeholder {
-    padding: 10px 15px;
-  }
-  
-  .footer-logo-text {
-    font-size: 18px;
-  }
-  
-  .footer-nav-link {
-    font-size: 12px;
-    padding: 6px 12px;
-  }
-  
-  .contacts-wrapper,
-  .contacts-header {
-    font-size: 13px;
-  }
-  
-  .label {
-    font-size: 11px;
-  }
-  
-  .contact-link-footer {
-    font-size: 10px;
-  }
-  
-  .footer-social {
-    gap: 15px;
-    margin-bottom: 15px;
-  }
-  
-  .social-link {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .social_img {
-    width: 22px;
-    height: 22px;
-  }
-  
-  .copyright {
-    font-size: 10px;
-    line-height: 1.2;
-  }
-}
-
-/* Очень маленькие телефоны (до 375px) */
-@media (max-width: 375px) {
-  .footer {
-    padding: 20px 0 10px;
-  }
-  
-  .footer-content {
-    gap: 20px;
-  }
-  
-  .footer-logo-text {
-    font-size: 16px;
-  }
-  
-  .footer-nav-link {
-    font-size: 11px;
-  }
-  
-  .contacts-wrapper,
-  .contacts-header {
-    font-size: 12px;
-  }
-  
-  .label {
-    font-size: 10px;
-    white-space: normal;
-    text-align: center;
-  }
-  
-  .contact-link-footer {
-    font-size: 9px;
-    text-align: center;
-  }
-  
-  .footer-social {
-    gap: 12px;
-  }
-  
-  .social-link {
-    width: 35px;
-    height: 35px;
-  }
-  
-  .social_img {
-    width: 20px;
-    height: 20px;
-  }
-  
-  .footer-bottom {
-    padding-top: 15px;
-  }
-}
-
-/* Для темной темы */
-@media (prefers-color-scheme: dark) {
-  .footer {
-    background-color: rgba(0, 52, 101, 0.95);
-  }
-  
-  .footer-nav-link {
-    color: #e0e0e0;
-  }
-  
-  .contact-link-footer {
-    color: #e0e0e0;
-  }
-  
-  .social-link {
-    background-color: rgba(45, 45, 68, 0.8);
-  }
-}
-
-/* Для ландшафтной ориентации телефонов */
-@media (max-height: 500px) and (orientation: landscape) {
-  .footer {
-    padding: 20px 0 10px;
-  }
-  
-  .footer-content {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-  }
-  
-  .footer-nav-container {
-    flex-direction: row;
     gap: 30px;
   }
-  
-  .footer-nav-links {
-    flex-direction: row;
-    gap: 20px;
-  }
-}
 
-/* Улучшение для touch-устройств */
-/* @media (hover: none) and (pointer: coarse) {
-  .footer-nav-link {
-    padding: 10px 15px;
-    min-height: 40px;
-    display: flex;
+  .footer-nav {
+    text-align: center;
+  }
+
+  .footer-nav-list {
     align-items: center;
-    justify-content: center;
   }
-  
-  .social-link {
-    min-height: 45px;
-    min-width: 45px;
-  }
-  
-  .contact-link-footer {
-    padding: 5px 0;
-  }
-} */
 
-/* Анимации для лучшего UX */
-@media (prefers-reduced-motion: no-preference) {
-  .footer-nav-link {
-    transition: all 0.2s ease;
+  .footer-nav-link:hover {
+    transform: translateX(0);
   }
-  
-  .social-link {
-    transition: transform 0.2s ease;
+
+  .contact-link:hover {
+    transform: translateX(0);
   }
-  
-  .social-link:active {
-    transform: scale(0.9);
+
+  .contact-item {
+    align-items: center;
   }
 }
 
-/* Поддержка очень высоких плотностей пикселей */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+@media (max-width: 480px) {
+  .footer {
+    padding: 30px 0 15px;
+  }
+
+  .footer-nav-title {
+    font-size: 14px;
+  }
+
   .footer-nav-link {
-    border-width: 0.5px;
+    font-size: 12px;
   }
-  
-  .footer-content {
-    border-bottom-width: 0.5px;
+
+  .contact-label {
+    font-size: 11px;
   }
-  
-  .footer-bottom {
-    border-top-width: 0.5px;
+
+  .contact-link {
+    font-size: 12px;
+  }
+
+  .copyright {
+    font-size: 9px;
   }
 }

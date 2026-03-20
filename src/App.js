@@ -2,6 +2,7 @@ import './App.css';
 import Header from './component/Header';
 import Footer from './component/Footer';
 import Loader from './component/Loader';
+import { AuthProvider } from './AuthContext';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
  import EventsPage from './Events/EventsPage';
  import EventDetail from './Events/EventDetail';
@@ -28,10 +29,11 @@ function App() {
   return (
     <Router>
       <div className="App">
-        
+        <AuthProvider>
         <Header />
         
         <main className="main-content">
+        <div className='container-page '>
           <Routes>
             <Route path="/" element={<EventsPage />} />
 
@@ -41,9 +43,11 @@ function App() {
             <Route path="/cart" element={<CartPage/>} />
             <Route path="/shop" element={<ShopPage />} /> 
           </Routes>
+          </div>  
         </main>
         
         <Footer />
+        </AuthProvider>
       </div>
     </Router>
   );

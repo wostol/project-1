@@ -8,7 +8,7 @@ function FavoritesPage() {
     <div className="favorites-page">
       <header className="favorites-header">
         <h1 className="favorites-title">Избранное</h1>
-        <p className="favorites-subtitle">Ваши сохраненные мероприятия и материалы</p>
+        <p className="favorites-subtitle">Ваши сохраненные мероприятия</p>
       </header>
 
       <div className="favorites-tabs">

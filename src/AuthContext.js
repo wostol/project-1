@@ -2,10 +2,19 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import authService from './authService';
 import { useNavigate } from 'react-router-dom';
 
-const AuthContext = createContext();
+// Создаем контекст
+const AuthContext = createContext(null); // Важно: начальное значение null
 
-export const useAuth = () => useContext(AuthContext);
+// Хук для использования контекста
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined || context === null) {
+    throw new Error('useAuth должен использоваться внутри AuthProvider');
+  }
+  return context;
+};
 
+// Провайдер
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
@@ -44,17 +53,11 @@ export const AuthProvider = ({ children }) => {
         const success = await authService.handleCallback(searchParams);
         
         if (success) {
-          // Убираем параметры из URL
           window.history.replaceState({}, document.title, window.location.pathname);
-          
-          // Обновляем состояние
           setIsAuthenticated(true);
           setUser(authService.getUser());
-          
-          // Перенаправляем в профиль
           navigate('/profile');
         } else {
-          // Если ошибка, перенаправляем на главную
           navigate('/');
         }
         
@@ -77,14 +80,17 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  // Значение, которое будет передаваться в контекст
+  const value = {
+    isAuthenticated,
+    user,
+    login,
+    logout,
+    loading
+  };
+
   return (
-    <AuthContext.Provider value={{ 
-      isAuthenticated, 
-      user, 
-      login, 
-      logout, 
-      loading 
-    }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

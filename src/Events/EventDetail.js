@@ -295,7 +295,7 @@ const EventDetail = () => {
                       )}
                     </div>
                   </div>
-
+                    
                   {/* Кнопка регистрации */}
                   <button
                     className="register-btn"

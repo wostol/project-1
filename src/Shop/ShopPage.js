@@ -7,7 +7,6 @@ import pen from '../image/pen.png'
 const ShopPage = () => {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
-  // Моковые данные товаров с изображениями
   const mockProducts = [
     {
       id: 1,

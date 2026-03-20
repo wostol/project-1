@@ -93,11 +93,12 @@ const EventsPage = () => {
   }, [activeTab]);
 
   return (
+    <div className='container'>
     <div className="events-page">
       <header className="events-header">
         <h1 className="events-title">Мероприятия</h1>
       </header>
-
+    
       {/* Переключатель Прошедшие/Будущие */}
       <div className="events-tabs">
         <button
@@ -150,6 +151,7 @@ const EventsPage = () => {
           </div>
         </>
       )}
+    </div>
     </div>
   );
 };

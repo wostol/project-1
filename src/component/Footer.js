@@ -7,53 +7,72 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="footer">
-      <div className="footer-container">
-        <div className="footer-content">
-          <div className="footer-logo-container">
-            <img src={logo} alt="XY Connections Logo" className="footer-logo" />
-          </div>
-          <div className="nav-contacts-container">
-            <div className="footer-nav-container">
-              <div className="footer-nav-links">
-                <a href="/" className="footer-nav-link">Мероприятия</a>
-                <a href="/profile" className="footer-nav-link">Личный кабинет</a>
-                <a href="/shop" className="footer-nav-link">Магазин</a>
-              </div>
-              <div className="contacts-wrapper">
-              <span className="contacts-header">Контакты</span>
-              <div className="footer-contacts-container">
-                <div className="contact-column">
-                  <p className="contact-item">
-                    <span className="label">Руководитель:</span>
-                    <a href="tel:+71234567890" className="contact-link-footer">+7 (123) 456-78-90</a>
-                  </p>
-                  <p className="contact-item">
-                    <span className="label">Пресс-служба:</span>
-                    <a href="tel:+79876543210" className="contact-link-footer">+7 (987) 654-32-10</a>
-                  </p>
-                </div>
-              </div>
-            </div>
-            </div>
-          </div>
+<footer className="footer">
+  <div className="footer-container">
+    <div className="footer-content">
+      {/* Логотип */}
+      <div className="footer-logo-container">
+        <img src={logo} alt="XY Connections Logo" className="footer-logo" />
+      </div>
+
+      {/* Навигация и контакты */}
+      <div className="footer-nav-contacts">
+        {/* Навигационные ссылки */}
+        <div className="footer-nav">
+          <h3 className="footer-nav-title">МЕРОПРИЯТИЯ</h3>
+          <ul className="footer-nav-list">
+            <li><a href="/events/ski-marathon" className="footer-nav-link">Лыжный марафон</a></li>
+            <li><a href="/events/basketball" className="footer-nav-link">Баскетбол</a></li>
+            <li><a href="/events/3x3" className="footer-nav-link">3 х 3</a></li>
+          </ul>
         </div>
-        <div className="footer-social">
-          <a href="https://vk.com/sib_lions" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="ВКонтакте" >
-            <img 
-              src={VK}
-              alt="VK" 
-              className="social_img" 
-            />
-          </a>
+
+        <div className="footer-nav">
+          <h3 className="footer-nav-title">ЛИЧНЫЙ КАБИНЕТ</h3>
+          <ul className="footer-nav-list">
+            <li><a href="/profile/points" className="footer-nav-link">Мои баллы</a></li>
+            <li><a href="/profile/achievements" className="footer-nav-link">Достижения</a></li>
+            <li><a href="/profile/statistics" className="footer-nav-link">Статистика</a></li>
+          </ul>
         </div>
-        <div className="footer-bottom">
-          <p className="copyright">
-            © {currentYear} Национальный исследовательский Томский политехнический университет
-          </p>
+
+        <div className="footer-nav">
+          <h3 className="footer-nav-title">КОНТАКТЫ</h3>
+          <ul className="footer-nav-list">
+            <li className="contact-item">
+              <span className="contact-label-footer">Руководитель</span>
+              <a href="tel:+7xxxxxx-xx-xx" className="contact-link-footer">+7 (xxxx) xx-xx-xx</a>
+            </li>
+            <li className="contact-item">
+              <span className="contact-label-footer">Пресс-служба</span>
+              <a href="tel:+7xxxxxx-xx-xx" className="contact-link-footer">+7 (xxxx) xx-xx-xx</a>
+            </li>
+          </ul>
         </div>
       </div>
-    </footer>
+
+      {/* Социальные сети */}
+
+    </div>
+          <div className="footer-social">
+        <a 
+          href="https://vk.com/sib_lions" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="social-link" 
+          aria-label="ВКонтакте"
+        >
+          <img src={VK} alt="VK" className="social_img" />
+        </a>
+      </div>
+    {/* Нижняя часть с копирайтом */}
+    <div className="footer-bottom">
+      <p className="copyright">
+        © {currentYear} Национальный исследовательский Томский политехнический университет
+      </p>
+    </div>
+  </div>
+</footer>
   );
 };
 

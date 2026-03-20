@@ -23,14 +23,8 @@ body {
 
 .main-content {
   flex: 1;
-  padding: 2rem 0;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
 
 /* ����� ��� ������ */
 a {
@@ -69,4 +63,46 @@ a {
 .temp-card p {
   color: #b0b0b0;
   text-align: left;
+}
+.container-page {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Планшеты и ноутбуки */
+@media (max-width: 1024px) {
+  .container-page {
+    max-width: 90%;
+    margin: 1.5rem auto;
+    padding: 0 15px;
+  }
+}
+
+/* Мобильные устройства */
+@media (max-width: 768px) {
+  .container-page {
+    max-width: 95%;
+    margin: 1rem auto;
+    padding: 0 12px;
+  }
+}
+
+/* Маленькие мобильные устройства */
+@media (max-width: 480px) {
+  .container-page {
+    max-width: 100%;
+    margin: 0.8rem auto;
+    padding: 0 10px;
+  }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 320px) {
+  .container-page {
+    margin: 0.5rem auto;
+    padding: 0 8px;
+  }
 }

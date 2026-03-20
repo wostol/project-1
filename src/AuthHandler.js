@@ -2,11 +2,22 @@ export async function oauthRedirect(){
   await _generateCodeVerifier();
   const codeChallenge = await _generateCodeChallenge();
   const state = _generateState();
-  const redirectUri = window.location.origin;
-  const authUrl = `https://oauth.tpu.ru/authorize?client_id=${import.meta.env.VITE_TPU_OAUTH_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&state=${state}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
+  const redirectUri = window.location.origin + window.location.pathname;
+  
+  // Для CRA используем process.env
+  const clientId = process.env.REACT_APP_TPU_OAUTH_CLIENT_ID;
+  
+  if (!clientId) {
+    console.error('REACT_APP_TPU_OAUTH_CLIENT_ID не найдена в .env файле');
+    console.log('Доступные переменные:', process.env);
+    return;
+  }
+  
+  const authUrl = `https://oauth.tpu.ru/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&state=${state}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
+  
+  console.log('Redirect URL:', authUrl);
   window.location.href = authUrl;
 }
-
 /**
  * Генерирует Code Verifier для протокола PKCE и сохраняет его в sessionStorage
  * 
@@ -40,7 +51,6 @@ async function _generateCodeVerifier() {
     
     // Сохраняем в sessionStorage
     sessionStorage.setItem('code_verifier', codeVerifier);
-
 }
 
 /**
@@ -59,7 +69,6 @@ function _clearCodeVerifier() {
     sessionStorage.removeItem('code_verifier');
 }
 
-
 /**
  * Генерирует code_challenge из code_verifier по алгоритму S256
  * @param {string} codeVerifier - Исходный код верификатора
@@ -67,40 +76,40 @@ function _clearCodeVerifier() {
  */
 async function _generateCodeChallenge() {
   let codeVerifier = _getCodeVerifier();
-// Проверяем корректность входных данных
-    if (typeof codeVerifier !== 'string') {
-        throw new Error('codeVerifier должен быть строкой');
-    }
+  
+  // Проверяем корректность входных данных
+  if (typeof codeVerifier !== 'string') {
+      throw new Error('codeVerifier должен быть строкой');
+  }
 
-    // Проверяем доступность крипто API
-    if (!window.crypto || !window.crypto.subtle) {
-        throw new Error('Криптографическое API недоступно в текущем браузере');
-    }
+  // Проверяем доступность крипто API
+  if (!window.crypto || !window.crypto.subtle) {
+      throw new Error('Криптографическое API недоступно в текущем браузере');
+  }
 
-    try {
-        // Шаг 1: Кодируем строку в UTF-8
-        const encoder = new TextEncoder();
-        const data = encoder.encode(codeVerifier);
+  try {
+      // Шаг 1: Кодируем строку в UTF-8
+      const encoder = new TextEncoder();
+      const data = encoder.encode(codeVerifier);
 
-        // Шаг 2: Генерируем SHA-256 хеш
-        const digest = await window.crypto.subtle.digest('SHA-256', data);
+      // Шаг 2: Генерируем SHA-256 хеш
+      const digest = await window.crypto.subtle.digest('SHA-256', data);
 
-        // Шаг 3: Преобразуем в Base64
-        const arrayBuffer = new Uint8Array(digest);
-        let base64String = btoa(String.fromCharCode.apply(null, arrayBuffer));
+      // Шаг 3: Преобразуем в Base64
+      const arrayBuffer = new Uint8Array(digest);
+      let base64String = btoa(String.fromCharCode.apply(null, arrayBuffer));
 
-        // Шаг 4: Преобразуем в Base64URL
-        const base64Url = base64String
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/=/g, '');
+      // Шаг 4: Преобразуем в Base64URL
+      const base64Url = base64String
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=/g, '');
 
-        return base64Url;
-    } catch (error) {
-        throw new Error('Ошибка при генерации code_challenge: ' + error.message);
-    }
+      return base64Url;
+  } catch (error) {
+      throw new Error('Ошибка при генерации code_challenge: ' + error.message);
+  }
 }
-
 
 /**
  * Генерирует случайные байты для Code Verifier
@@ -108,47 +117,36 @@ async function _generateCodeChallenge() {
  * @returns {Promise<Uint8Array>}
  */
 async function _generateRandomBytes(length) {
-    // Вариант 1: Использование crypto.subtle, если доступно
-    if (crypto.subtle && crypto.subtle.randomBytes) {
-        try {
-            return new Uint8Array(await crypto.subtle.randomBytes(length));
-        } catch (error) {
-            console.warn('crypto.subtle.randomBytes не доступен, используем альтернативный метод');
-        }
-    }
-    
-    // Вариант 2: Использование window.crypto.getRandomValues
+    // Используем только window.crypto.getRandomValues - это стандарт для браузера
     if (window.crypto && window.crypto.getRandomValues) {
         const array = new Uint8Array(length);
         window.crypto.getRandomValues(array);
         return array;
     }
     
-    // Вариант 3: Падение с ошибкой, если ничего не доступно
+    // Вариант с crypto.subtle.randomBytes не существует в браузерах, удаляем
+    
     throw new Error('Не удалось найти способ генерации случайных байтов');
 }
-
-
 
 // state генерируется для проверки ответа
 function _generateState() {
   try {
-  // Проверяем доступность crypto API
-  const crypto = window.crypto || require('crypto');
-  if (!crypto) {
-    throw new Error("Crypto API недоступно");
-  }
+    // Проверяем доступность crypto API в браузере
+    if (!window.crypto || !window.crypto.getRandomValues) {
+      throw new Error("Crypto API недоступно в браузере");
+    }
 
-  const array = new Uint8Array(48);
-  crypto.getRandomValues(array);
+    const array = new Uint8Array(48);
+    window.crypto.getRandomValues(array);
 
-  const state = btoa(String.fromCharCode(...array))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
+    const state = btoa(String.fromCharCode(...array))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
 
-  // Сохраняем в sessionStorage
-  sessionStorage.setItem('oauth_state', state);
+    // Сохраняем в sessionStorage
+    sessionStorage.setItem('oauth_state', state);
     return state;
   } catch (error) {
     console.error("Ошибка генерации OAuth state:", error);
@@ -156,11 +154,12 @@ function _generateState() {
   }
 }
 
+
 export function oauthCodeHandler(query) {
   try {
     const searchParams = new URLSearchParams(query);
     const code = searchParams.get("code");
-    const state = searchParams.get("state")
+    const state = searchParams.get("state");
     const codeVerifier = _getCodeVerifier();
 
     if (code && state && codeVerifier) {
@@ -172,9 +171,8 @@ export function oauthCodeHandler(query) {
           code: code,
           codeVerifier: codeVerifier,
         }
-                
       }
-      throw new Error ('Некорректное состояние авторизации');
+      throw new Error('Некорректное состояние авторизации');
     }
   } catch (err) {
     console.error("Ошибка OAuth state:", err);
@@ -183,19 +181,9 @@ export function oauthCodeHandler(query) {
 }
 
 function _getState() {
-  // Получаем state из sessionStorage
-  const state = sessionStorage.getItem('oauth_state');
-
-  return state;
+  return sessionStorage.getItem('oauth_state');
 }
 
 function _clearState() {
-  // Получаем state из sessionStorage
-  const state = sessionStorage.getItem('oauth_state');
-  
-  // Удаляем из sessionStorage после получения
-  if (state) {
-    sessionStorage.removeItem('oauth_state');
-  }
-  
+  sessionStorage.removeItem('oauth_state');
 }

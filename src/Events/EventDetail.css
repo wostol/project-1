@@ -3,7 +3,6 @@
 .event-detail {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 20px;
   min-height: calc(100vh - 200px);
 }
 
@@ -228,7 +227,7 @@
   opacity: 0.8;
 }
 
-/* Правая колонка - регистрация */
+/* О©╫О©╫О©╫О©╫О©╫О©╫ О©╫О©╫О©╫О©╫О©╫О©╫О©╫ - О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫ */
 .event-registration {
   padding: 40px;
   background: #f8f9fa;
@@ -446,7 +445,7 @@
   transition: width 0.3s ease;
 }
 
-/* Адаптивность */
+/* О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫ */
 @media (max-width: 992px) {
   .event-detail-content {
     grid-template-columns: 1fr;
