@@ -13,14 +13,84 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-:root{
-  --main-color: rgba(0, 52, 102, 1);
-  --background: rgba(255, 255, 255, 1);
-  --hover-button:  rgba(23, 84, 161, 1);
-  --shadow: 0px 0px 4px 2px rgba(0, 52, 102, 1);
-  --text-color: rgba(0, 52, 102, 1);
-  --text-bg: rgba(255, 255, 255, 1);
+:root {
+  /* Цвета */
+  --color-primary: #003466;
+  --color-primary-hover: #002549;
+  --color-primary-light: #e3f2fd;
+  --color-grad-sec: #0056b3;
+  --color-success:  #29BE46;
+  --color-grad-first: #207431;
+
+;
+  --color-success-bg: #d4edda;
+  
+  --color-warning: #856404;
+  --color-warning-bg: #fff3cd;
+  
+  --color-danger: #721c24;
+  --color-danger-bg: #f8d7da;
+  
+  --color-info: #004085;
+  --color-info-bg: #cce5ff;
+  
+  --color-gray: #383d41;
+  --color-gray-bg: #e2e3e5;
+  
+  --color-text-primary: #003466;
+  --color-text-secondary: #495057;
+  --color-text-muted: #6c757d;
+  
+  --color-bg-white: #ffffff;
+  --color-bg-light: #f8f9fa;
+  --color-bg-card: #ffffff;
+  
+  /* Границы и тени */
+  --border-radius-sm: 8px;
+  --border-radius-md: 16px;
+  --border-radius-lg: 20px;
+  --border-radius-pill: 30px;
+  --border-radius-badge: 20px;
+  
+  --shadow-sm: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0px 4px 12px rgba(0, 52, 102, 0.08);
+  --shadow-hover: 0px 2px 8px rgba(0, 52, 102, 0.1);
+  --shadow-active: 0px 0px 4px 2px #003466;
+  
+  /* Отступы */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-ti: 17px;
+  --spacing-xl: 20px;
+  --spacing-xxl: 30px;
+  
+  /* Шрифты */
+  --font-family-base: 'Kontora', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 15px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-xxl: 36px;
+  --font-size-title: 55px;
+  
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Анимации */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
 }
+
+/* ========================================
+   Базовые стили страницы
+   ======================================== */
+
 
 /* Темная тема (опционально) */
 @media (prefers-color-scheme: dark) {

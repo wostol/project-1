@@ -1,4 +1,3 @@
-/* Header.css */
 @import url('../fonts.css');
 
 .header {
@@ -10,9 +9,8 @@
   top: 0;
   z-index: 1000;
   position: relative;
-    max-width: 128rem;
-    display: block;
-    margin: 0 auto;
+  display: block;
+  margin: 0 auto;
 }
 
 .header-container {
@@ -24,10 +22,12 @@
   padding: 1rem 0;
   position: relative;
 }
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
 }
+
 /* Логотип */
 .logo-link {
   text-decoration: none;
@@ -38,7 +38,7 @@
 }
 
 .logo-link:focus {
-  outline: none;                  
+  outline: none;
 }
 
 .logo-image {
@@ -102,7 +102,6 @@
   color: #003465;
   box-shadow: 0px 0px 4px 2px #003466;
 }
-
 .nav-link:focus {
   outline: none;
   background: white;
@@ -116,7 +115,6 @@
   gap: 21px;
   align-items: center;
 }
-
 
 /* Кнопка выхода */
 .logout-btn {
@@ -133,6 +131,7 @@
   display: flex;
   align-items: center;
 }
+
 /* =========================== */
 /* АНИМАЦИЯ ДЛЯ КНОПОК С ИКОНКАМИ */
 /* =========================== */
@@ -162,7 +161,6 @@
   --i: #ff6b6b;
   --j: #ff8e8e;
 }
-
 .lock-icon-link .blue-btn {
   --i: #4ecdc4;
   --j: #6ee7e0;
@@ -176,29 +174,37 @@
 } */
 
 /* Градиентный фон при hover */
-
 .blue-btn::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: 25px;
-  background:linear-gradient(90deg, rgba(0, 52, 102, 1) 0%, rgba(23, 84, 161, 1) 40%, rgba(255, 255, 255, 0.7) 110%);
+  background: linear-gradient(135deg, 
+    #001d3d 0%, 
+    #003466 25%, 
+    #1754A1 50%, 
+    #2a6fb0 75%, 
+    #003466 100%
+  );
   opacity: 0;
-  transition: 0.5s;
+  transition: opacity 0.5s ease;
   z-index: 1;
 }
-
 /* Эффект свечения */
 .blue-btn::after {
   content: "";
   position: absolute;
-  top: 10px;
-  width: 100%;
-  height: 100%;
-  border-radius: 25px;
-  background: linear-gradient(45deg, var(--i), var(--j));
-  transition: 0.5s;
-  filter: blur(15px);
+  inset: -2px;
+  border-radius: 27px;
+  background: linear-gradient(45deg, 
+    #003466, 
+    #1754A1, 
+    #28be46, 
+    #1754A1, 
+    #003466
+  );
+  transition: opacity 0.5s ease;
+  filter: blur(8px);
   z-index: -1;
   opacity: 0;
 }
@@ -210,6 +216,7 @@
   /* box-shadow: 0 10px 25px rgba(0, 0, 0, 0); */
   border: none;
 }
+
 .blue-btn:hover::before {
   opacity: 1;
 }
@@ -294,9 +301,10 @@
 
 /* Стили для активного состояния */
 .blue-btn.active {
-  background: white ;
+  background: white;
   box-shadow: 0px 0px 4px 2px #003466;
 }
+
 .blue-btn.active:hover {
   box-shadow: none;
 }
@@ -367,7 +375,11 @@
 /* =========================== */
 /* АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНОВ */
 /* =========================== */
-
+@media (min-width: 1025px) {
+  .header-actions {
+    padding-right: 30px; /* Добавляем пространство для раскрытия последней кнопки */
+  }
+}
 /* Планшеты (768px - 1024px) */
 @media (max-width: 1024px) {
   .header {
@@ -378,15 +390,15 @@
     font-size: 20px;
     padding: 6px 12px;
   }
-  
+
   .nav-list {
     gap: 15px;
   }
-  
+
   .header-actions {
     gap: 15px;
   }
-  
+
   .blue-btn {
     width: 50px;
     height: 48px;
@@ -398,17 +410,42 @@
   .header {
     padding: 0 30px;
   }
-  
+    .blue-btn {
+    width: 50px !important;
+    height: 48px !important;
+    background: #003466 !important;
+    transform: none !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+  }
+  /* Полностью отключаем псевдоэлементы градиента на тач-устройствах */
+  .blue-btn::before,
+  .blue-btn::after {
+    display: none !important;
+  }
+  .blue-btn:hover {
+    width: 50px !important;
+    background: #003466 !important;
+    transform: none !important;
+  }
+  .btn-text { display: none !important; }
+  .btn-icon-wrapper { transform: scale(1) !important; }
+  .btn-badge { 
+    top: -2px; 
+    right: -2px; 
+    width: 16px; 
+    height: 16px; 
+    font-size: 10px; 
+  }
   .header-container {
     padding: 0.8rem 0;
     justify-content: space-between;
   }
-  
+
   .logo-image {
     min-width: 50px;
     width: 12vw;
   }
-  
+
   .burger-menu {
     display: flex;
   }
@@ -472,8 +509,13 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 
   /* Адаптация анимированных кнопок для мобильной версии */
@@ -483,15 +525,18 @@
   }
 
   .main-nav .blue-btn:hover {
-    width: 50px; /* Отключаем расширение на мобильных */
+    width: 50px;
+    /* Отключаем расширение на мобильных */
   }
 
   .main-nav .btn-text {
-    display: none; /* Скрываем текст на мобильных */
+    display: none;
+    /* Скрываем текст на мобильных */
   }
 
   .main-nav .btn-icon-wrapper {
-    transform: scale(1) !important; /* Фиксируем иконки */
+    transform: scale(1) !important;
+    /* Фиксируем иконки */
   }
 }
 
@@ -500,39 +545,39 @@
   .header {
     padding: 0 20px;
   }
-  
+
   .header-container {
     gap: 15px;
     padding: 15px 0;
   }
-  
+
   .logo-link {
     justify-content: center;
   }
-  
+
   .logo-image {
     width: 40vw;
     min-width: 120px;
     max-width: 180px;
   }
-  
+
   .nav-list {
     gap: 8px;
     flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .nav-link {
     font-size: 16px;
     padding: 6px 12px;
   }
-  
+
   .header-actions {
     width: 100%;
     justify-content: center;
     gap: 20px;
   }
-  
+
   .blue-btn {
     width: 50px;
     height: 48px;
@@ -544,17 +589,17 @@
   .header {
     padding: 0 15px;
   }
-  
+
   .nav-link {
     font-size: 14px;
     padding: 5px 10px;
   }
-  
+
   .blue-btn {
     width: 45px;
     height: 43px;
   }
-  
+
   .btn-badge {
     width: 18px;
     height: 18px;
@@ -570,7 +615,7 @@
     width: 40px;
     height: 38px;
   }
-  
+
   .btn-svg {
     width: 20px;
     height: 20px;
@@ -584,9 +629,17 @@
   transform: translateX(20px);
 }
 
-.main-nav.open .nav-item:nth-child(1) { animation-delay: 0.1s; }
-.main-nav.open .nav-item:nth-child(2) { animation-delay: 0.15s; }
-.main-nav.open .nav-item:nth-child(3) { animation-delay: 0.2s; }
+.main-nav.open .nav-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.main-nav.open .nav-item:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.main-nav.open .nav-item:nth-child(3) {
+  animation-delay: 0.2s;
+}
 
 @keyframes slideIn {
   to {
@@ -598,18 +651,21 @@
 /* Улучшение тач-интерфейса */
 @media (hover: none) and (pointer: coarse) {
   .blue-btn:hover {
-    width: 60px; /* Отключаем расширение на тач-устройствах */
+    width: 60px;
+    /* Отключаем расширение на тач-устройствах */
     background: #003466;
   }
-  
+
   .blue-btn:hover .btn-icon-wrapper {
-    transform: scale(1); /* Фиксируем иконки */
+    transform: scale(1);
+    /* Фиксируем иконки */
   }
-  
+
   .btn-text {
-    display: none; /* Скрываем текст на тач-устройствах */
+    display: none;
+    /* Скрываем текст на тач-устройствах */
   }
-  
+
   .nav-link:active,
   .blue-btn:active {
     transform: scale(0.95);

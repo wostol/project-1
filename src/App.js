@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
  import EventsPage from './Events/EventsPage';
  import EventDetail from './Events/EventDetail';
  import ProfilePage from './Profile/ProfilePage';
- import FavoritesPage from './Favorite/FavoritesPage'; 
+ import FavoritesPage from './Favorite/MyEvents'; 
 import CartPage from './Bag/CartPage'; 
  import ShopPage from './Shop/ShopPage';
  import React, { useState, useEffect } from 'react';

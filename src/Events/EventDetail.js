@@ -1,127 +1,109 @@
 // components/EventDetail.js
-import React, { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import './EventDetail.css'
-import logo from '../image/lionsib.svg'
-// Моковые данные для детальной страницы (в будущем из БД)
-const eventDetails = {
-  1: {
-    id: 1,
-    title: 'Гандбол',
-    date: '2025-12-15T19:30:00',
-    location: 'ул. Карпова, 4',
-    description: 'Приходи играть в гандбол. Отличная возможность проявить себя в командной игре.',
-    fullDescription: 'Гандбольный турнир среди студентов университета. Соревнование пройдет по олимпийской системе. Все участники будут разделены на команды по 7 человек. Турнир проводится при поддержке спортивного клуба университета. Победители получат памятные призы и дополнительные баллы.',
-    category: 'Спорт',
-    maxParticipants: 16,
-    currentParticipants: 12,
-    maxSpectators: 50,
-    currentSpectators: 25,
-    organizer: 'Спортивный клуб университета',
-    contactEmail: 'sport@university.ru',
-    contactPhone: '+7 (999) 123-45-67',
-    requirements: 'Спортивная форма, сменная обувь, медицинский допуск',
-    price: 0,
-    rewardsPoints: 150,
-    duration: '2 часа',
-    level: 'Любительский',
-    rules: 'Игра по правилам Международной федерации гандбола. Каждый матч состоит из двух таймов по 30 минут.',
-    equipment: 'Мяч предоставляется организаторами'
-  },
-  2: {
-    id: 2,
-    title: 'Шахматный турнир',
-    date: '2025-12-20T15:00:00',
-    location: 'Главный корпус, ауд. 301',
-    description: 'Ежегодный шахматный турнир среди студентов.',
-    fullDescription: 'Ежегодный открытый шахматный турнир среди студентов университета. Турнир проводится по швейцарской системе. Участие бесплатное. Призовой фонд - 5000 баллов на внутреннем счете. Для участия необходимо иметь базовые знания правил шахмат.',
-    category: 'Интеллектуальные',
-    maxParticipants: 32,
-    currentParticipants: 18,
-    maxSpectators: 100,
-    currentSpectators: 40,
-    organizer: 'Шахматный клуб',
-    contactEmail: 'chess@university.ru',
-    contactPhone: '+7 (999) 765-43-21',
-    requirements: 'Знание правил шахмат',
-    price: 0,
-    rewardsPoints: 200,
-    duration: '4 часа',
-    level: 'Любой уровень',
-    rules: 'Швейцарская система, контроль времени: 15 минут на партию + 10 секунд за ход',
-    equipment: 'Шахматные доски и часы предоставляются'
-  }
-};
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import useEventStore, { 
+  useSelectedEvent, 
+  useEventLoading, 
+  useEventError 
+} from './eventStore';
+import './EventDetail.css';
+import logo from '../image/lionsib.svg';
 
 const EventDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  
   const [registrationType, setRegistrationType] = useState('participant');
   const [isRegistered, setIsRegistered] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  
+  // Actions из store
+  const fetchEventById = useEventStore((state) => state.fetchEventById);
+  const clearSelectedEvent = useEventStore((state) => state.clearSelectedEvent);
+  
+  // Data из store
+  const event = useSelectedEvent();
+  const loading = useEventLoading();
+  const error = useEventError();
 
-  const event = eventDetails[id];
-
-  if (!event) {
-    return (
-      <div className="event-detail not-found">
-        <h1>Мероприятие не найдено</h1>
-        <p>Запрошенное мероприятие не существует или было удалено.</p>
-        <button onClick={() => navigate('/')} className="back-btn">
-          Вернуться к мероприятиям
-        </button>
-      </div>
-    );
-  }
+  // Загрузка при монтировании
+  useEffect(() => {
+    if (id) {
+      fetchEventById(id);
+    }
+    return () => clearSelectedEvent();
+  }, [id, fetchEventById, clearSelectedEvent]);
 
   // Форматирование даты
   const formatDate = (dateString) => {
+    if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleDateString('ru-RU', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
     });
   };
 
-  // Форматирование времени
   const formatTime = (dateString) => {
+    if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleTimeString('ru-RU', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Расчет оставшихся мест
+  // Расчет доступных мест
   const calculateAvailableSpots = (type) => {
+    if (!event) return 0;
     if (type === 'participant') {
-      const spots = event.maxParticipants - event.currentParticipants;
-      return spots > 0 ? spots : 0;
-    } else {
-      const spots = event.maxSpectators - event.currentSpectators;
-      return spots > 0 ? spots : 0;
-    }
+      const max = event.maxParticipants || 0;
+      const current = event.currentParticipants || 0;
+      return Math.max(0, max - current);
+    } 
+else {
+    // 👇 Болельщики: всегда возвращаем 1 (места есть)
+    return 1;
+  }
   };
 
   // Обработка регистрации
   const handleRegister = () => {
-    // Здесь будет запрос к API
+    // TODO: API запрос на регистрацию
     setRegistrationSuccess(true);
     setIsRegistered(true);
-    
-    // Через 3 секунды скрываем сообщение об успехе
-    setTimeout(() => {
-      setRegistrationSuccess(false);
-    }, 3000);
+    setTimeout(() => setRegistrationSuccess(false), 3000);
   };
 
   const availableParticipants = calculateAvailableSpots('participant');
   const availableSpectators = calculateAvailableSpots('spectator');
-  
   const canRegisterAsParticipant = availableParticipants > 0;
   const canRegisterAsSpectator = availableSpectators > 0;
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="event-detail-container">
+        <button onClick={() => navigate('/')} className="back-btn">← Назад</button>
+        <div className="loading-state">
+          <div className="spinner" />
+          <p>Загрузка мероприятия...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !event) {
+    return (
+      <div className="event-detail-container">
+        <button onClick={() => navigate('/')} className="back-btn">← Назад</button>
+        <div className="error-state">
+          <h2>Мероприятие не найдено</h2>
+          <p>{error || 'Запрошенное мероприятие не существует.'}</p>
+          <button onClick={() => navigate('/')} className="back-btn">
+            Вернуться к мероприятиям
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="event-detail">
@@ -137,11 +119,11 @@ const EventDetail = () => {
         {/* Заголовок */}
         <div className="event-detail-header">
           <h1 className="event-detail-title">{event.title}</h1>
-          <div className='logo'>
-                    <a href='/' className='logo-link'>
-                      <img src={logo} alt='XY Connections Logo' className='logo-image' />
-                    </a>
-            </div>
+<div className="event-header-logo">
+  <div className="event-header-logo-link" >
+    <img src={logo} alt="Логотип" className="event-header-logo-img" />
+  </div>
+</div>
         </div>
 
         {/* Основное содержимое */}

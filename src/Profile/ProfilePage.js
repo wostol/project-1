@@ -284,13 +284,6 @@ function ProfilePage () {
               <div className='points-details'>
                 <div className='points-item'>
                   <span className='points-label'>
-                    <svg
-                      className='points-label-icon'
-                      viewBox='0 0 24 24'
-                      fill='#FFD700'
-                    >
-                      <path d='M12 2L15 9H22L16 14L19 21L12 16.5L5 21L8 14L2 9H9L12 2Z' />
-                    </svg>
                     Активность на мероприятиях
                   </span>
                   <span className='points-value'>
@@ -299,13 +292,6 @@ function ProfilePage () {
                 </div>
                 <div className='points-item'>
                   <span className='points-label'>
-                    <svg
-                      className='points-label-icon'
-                      viewBox='0 0 24 24'
-                      fill='#FF6B6B'
-                    >
-                      <path d='M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z' />
-                    </svg>
                     Бонус
                   </span>
                   <span className='points-value'>
@@ -369,9 +355,9 @@ function ProfilePage () {
               <div className='info-card'>
                 <div className='info-card-header'>
                   <div className='info-card-icon'>
-                    <svg viewBox='0 0 24 24' fill='currentColor'>
-                      <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z' />
-                    </svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
                   </div>
                   <h4 className='info-card-title'>
                     Как достичь следующего уровня
@@ -402,33 +388,21 @@ function ProfilePage () {
                 <ul className='privileges-list'>
                   <li>
                     <span className='privilege-check'>
-                      <svg viewBox='0 0 24 24' fill='currentColor'>
-                        <path d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z' />
-                      </svg>
                     </span>
                     Доступ к эксклюзивным мероприятиям
                   </li>
                   <li>
                     <span className='privilege-check'>
-                      <svg viewBox='0 0 24 24' fill='currentColor'>
-                        <path d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z' />
-                      </svg>
                     </span>
                     Приоритетная запись на события
                   </li>
                   <li>
                     <span className='privilege-check'>
-                      <svg viewBox='0 0 24 24' fill='currentColor'>
-                        <path d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z' />
-                      </svg>
                     </span>
                     Уникальный значок профиля
                   </li>
                   <li>
                     <span className='privilege-check'>
-                      <svg viewBox='0 0 24 24' fill='currentColor'>
-                        <path d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z' />
-                      </svg>
                     </span>
                     Персональные рекомендации
                   </li>
@@ -590,9 +564,9 @@ function ProfilePage () {
 
       <div className='stat-card-modern'>
         <div className='stat-card-icon level'>
-          <svg width='32' height='32' viewBox='0 0 24 24' fill='currentColor'>
-            <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z'/>
-          </svg>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
         </div>
         <div className='stat-card-content'>
           <div className='stat-value-large'>2</div>

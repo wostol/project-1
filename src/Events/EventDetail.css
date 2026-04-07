@@ -54,22 +54,53 @@
 
 .event-detail-header {
   display: flex;
-    padding: 30px 60px;
-    background: linear-gradient(135deg, #003465, #00509e);
-    color: white;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-    align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xxl);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  color: var(--color-bg-white);
+  flex-wrap: nowrap;
+}
+.event-header-logo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
+.event-header-logo-link {
+  cursor: default;
+  display: flex;
+  align-items: center;
+  border-radius: var(--border-radius-sm);
+  transition: transform var(--transition-fast);
+}
+
+
+
+.event-header-logo-img {
+  height: 60px;
+  
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  transition: opacity var(--transition-normal);
+}
+
+.event-header-logo-img:hover {
+  opacity: 0.85;
+}
+
+
+
 .event-detail-title {
-  font-family: Kontora;
-    font-weight: 700;
-    font-style: Bold;
-    font-size: 65px;
-    line-height: 100%;
-  margin: 0 0 15px 0;
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: clamp(var(--font-size-xxl), 4vw, var(--font-size-title));
+  line-height: 1.2;
+  margin: 0;
+  flex: 1 1 ;
 }
 
 .event-detail-subtitle {
@@ -125,7 +156,7 @@
 .address {
   font-size: 18px;
   font-weight: 600;
-  color: #212529;
+  color: #003465;
   margin-bottom: 5px;
 }
 
@@ -465,13 +496,18 @@
   .event-detail {
     padding: 20px 15px;
   }
-  
+    .event-header-logo {
+    align-self: flex-start;
+    margin-top: var(--spacing-sm);
+  }
+
   .event-detail-header {
-    padding: 20px;
+    padding: var(--spacing-xl);
+    gap: var(--spacing-md);
   }
   
   .event-detail-title {
-    font-size: 28px;
+    font-size: clamp(var(--font-size-xl), 6vw, var(--font-size-xxl));
   }
   
   .event-info,
@@ -486,13 +522,17 @@
   .type-btn {
     justify-content: flex-start;
   }
+    .event-detail-header .logo-image {
+    max-height: 40px;
+  }
+
 }
 
 @media (max-width: 480px) {
   .event-detail-title {
     font-size: 24px;
   }
-  
+
   .event-detail-subtitle {
     flex-direction: column;
     align-items: flex-start;
@@ -503,9 +543,17 @@
     flex-direction: column;
     gap: 10px;
   }
-  
+    .event-header-logo-img {
+    height: 45px;
+  }
   .date-time .icon,
   .location .icon {
     align-self: flex-start;
   }
+}
+@media (max-width: 375px) {
+      .event-header-logo-img {
+    display: none;
+  }
+
 }
