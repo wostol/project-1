@@ -12,18 +12,20 @@ import logo from '../image/lionsib.svg';
 const EventDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   const [registrationType, setRegistrationType] = useState('participant');
   const [isRegistered, setIsRegistered] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
-  
+  const [registrationError, setRegistrationError] = useState(null);
+
   // Actions из store
   const fetchEventById = useEventStore((state) => state.fetchEventById);
   const clearSelectedEvent = useEventStore((state) => state.clearSelectedEvent);
-  
+  const registerForEvent = useEventStore((state) => state.registerForEvent);
+
   // Data из store
   const event = useSelectedEvent();
-  const loading = useEventLoading();
+  const eventLoading = useEventLoading();
   const error = useEventError();
 
   // Загрузка при монтировании
@@ -64,11 +66,20 @@ else {
   };
 
   // Обработка регистрации
-  const handleRegister = () => {
-    // TODO: API запрос на регистрацию
-    setRegistrationSuccess(true);
-    setIsRegistered(true);
-    setTimeout(() => setRegistrationSuccess(false), 3000);
+  const handleRegister = async () => {
+    try {
+      setRegistrationError(null);
+      await registerForEvent(id, registrationType);
+      
+      setIsRegistered(true);
+      setRegistrationSuccess(true);
+      
+      // Скрываем сообщение об успехе через 3 секунды
+      setTimeout(() => setRegistrationSuccess(false), 3000);
+    } catch (err) {
+      setRegistrationError(err.message || 'Произошла ошибка при регистрации');
+      console.error('Ошибка регистрации:', err);
+    }
   };
 
   const availableParticipants = calculateAvailableSpots('participant');
@@ -77,7 +88,7 @@ else {
   const canRegisterAsSpectator = availableSpectators > 0;
 
   // Loading state
-  if (loading) {
+  if (eventLoading) {
     return (
       <div className="event-detail-container">
         <button onClick={() => navigate('/')} className="back-btn">← Назад</button>
@@ -296,6 +307,12 @@ else {
                   {registrationSuccess && (
                     <div className="success-message">
                       Регистрация прошла успешно!
+                    </div>
+                  )}
+
+                  {registrationError && (
+                    <div className="error-message">
+                      {registrationError}
                     </div>
                   )}
                 </>

@@ -1,6 +1,8 @@
 // services/authService.js
 import { oauthRedirect, oauthCodeHandler } from './authHandler.js';
 
+const API_BASE_URL = 'https://songeng.voold.online/api';
+
 class AuthService {
   constructor() {
     this.tokenKey = 'auth_token';
@@ -94,6 +96,38 @@ class AuthService {
 
   isAuthenticated() {
     return !!this.getUser();
+  }
+
+  async registerForEvent(eventId, registrationType) {
+    try {
+      const user = this.getUser();
+
+      const response = await fetch(`${API_BASE_URL}/events/${eventId}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          eventId: eventId,
+          userId: user?.id,
+          registrationType: registrationType,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Ошибка ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('✅ Регистрация успешна:', data);
+      return data;
+
+    } catch (error) {
+      console.error('❌ Ошибка регистрации:', error);
+      throw error;
+    }
   }
 }
 

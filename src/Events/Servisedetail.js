@@ -23,14 +23,11 @@ export const fetchEventDetails = async (id, forceMock = false) => {
   try {
     console.log(`🌐 [API] Загрузка деталей события #${numericId}...`);
     
-    const response = await fetch(`${API_BASE_URL}/events/details/${numericId}`, {
+    const response = await fetch(`${API_BASE_URL}/events/${numericId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        // Добавьте токен авторизации если нужно:
-        // 'Authorization': `Bearer ${token}`,
       },
-      // Таймаут 10 секунд
       signal: AbortSignal.timeout(10000),
     });
 

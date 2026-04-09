@@ -1,6 +1,7 @@
 // stores/eventStore.js
 import { create } from 'zustand';
 import { fetchEventDetails, fetchFullEvent, mergeEventWithDetails } from './Servisedetail.js';
+import authService from '../authService';
 
 const API_BASE_URL = 'https://songeng.voold.online/api';
 
@@ -132,13 +133,37 @@ const useEventStore = create((set, get) => ({
    */
   updateEvent: (id, updates) => {
     set((state) => ({
-      events: state.events.map(e => 
+      events: state.events.map(e =>
         e.id === parseInt(id) ? { ...e, ...updates } : e
       ),
-      selectedEvent: state.selectedEvent?.id === parseInt(id) 
-        ? { ...state.selectedEvent, ...updates } 
+      selectedEvent: state.selectedEvent?.id === parseInt(id)
+        ? { ...state.selectedEvent, ...updates }
         : state.selectedEvent,
     }));
+  },
+
+  /**
+   * Зарегистрироваться на мероприятие
+   */
+  registerForEvent: async (eventId, registrationType) => {
+    set({ loading: true, error: null });
+
+    try {
+      const result = await authService.registerForEvent(eventId, registrationType);
+      
+      // Обновляем данные события после регистрации
+      if (result.event) {
+        get().updateEvent(eventId, result.event);
+      }
+
+      set({ loading: false });
+      return result;
+
+    } catch (error) {
+      console.error(`❌ Ошибка регистрации на событие #${eventId}:`, error);
+      set({ error: error.message, loading: false });
+      throw error;
+    }
   },
 
   // Утилиты
