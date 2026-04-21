@@ -29,6 +29,7 @@ export const fetchEventDetails = async (id, forceMock = false) => {
         'Content-Type': 'application/json',
       },
       signal: AbortSignal.timeout(10000),
+      credentials: 'include', 
     });
 
     // Если API вернул 404 — детали не найдены, пробуем моки

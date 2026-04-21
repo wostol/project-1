@@ -8,9 +8,6 @@ import useEventStore, {
 } from '../Events/eventStore';
 import styles from './MyEvents.module.css';
 
-// ========================================
-// Утилиты
-// ========================================
 export const formatDate = (isoString) => {
   if (!isoString) return '';
   const d = new Date(isoString);
@@ -86,7 +83,13 @@ const API = {
     });
   },
 };
-
+export const calculateDuration = (start, end) => {
+  if (!start || !end) return '';
+  const diffMs = new Date(end) - new Date(start);
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  const minutes = Math.round((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  return minutes === 0 ? `${hours} ч.` : `${hours} ч. ${minutes} мин.`;
+};
 // ========================================
 // Карточка мероприятия
 // ========================================
@@ -96,6 +99,19 @@ const EventCard = ({ event, onUnsubscribe }) => {
   const statusConfig = getStatusConfig(event.status);
     const fetchEventDetails = useEventStore((state) => state.fetchEventDetailsOnly);
   const updateEvent = useEventStore((state) => state.updateEvent);
+    useEffect(() => {
+    console.log('[EventCard] 📦 Данные:', {
+      id: event.id,
+      title: event.title,
+      role: event.myRole,
+      regDate: event.registeredAt,
+      team: event.teamName,
+      participants: `${event.currentParticipants}/${event.maxParticipants}`,
+      status: event.status,
+      type: event.eventType,
+      duration: event.duration
+    });
+  }, [event]);
   const progressPercent = event.currentParticipants && event.maxParticipants
     ? Math.round((event.currentParticipants  / event.maxParticipants) * 100)
     : 0;
@@ -169,7 +185,7 @@ const handleExpand = async (e) => {
             </svg>
             <div className={styles.dateTimeText}>
               <span className={styles.dateText}>{formatDate(event.startDate)}</span>
-              <span className={styles.timeText}>{formatTime(event.startDate)} – {formatTime(event.endDate)}</span>
+              <span className={styles.timeText}>{calculateDuration(event.startDate, event.endDate)}</span>
             </div>
           </div>
 
@@ -182,7 +198,6 @@ const handleExpand = async (e) => {
           </div>
         </div>
 
-        {/* Индикатор раскрытия (стрелочка) */}
         <div className={styles.expandIndicator}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
             <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
@@ -190,10 +205,8 @@ const handleExpand = async (e) => {
         </div>
       </div>
 
-      {/* Развёрнутая информация */}
       {isExpanded && (
   <div className={styles.details} onClick={(e) => e.stopPropagation()}>
-              {/* Роль участника - перенесена сюда */}
           <div className={styles.detailSection}>
             <div className={styles.detailLabel}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -205,127 +218,12 @@ const handleExpand = async (e) => {
               <span>{getRoleLabel(userRole)}</span>
             </div>
           </div>
-    {/* Полное описание */}
     {event.fullDescription && (
       <div className={styles.detailSection}>
         <div className={styles.detailLabel}>Описание</div>
         <p className={styles.detailText}>{event.fullDescription}</p>
       </div>
     )}
-
-    {/* Детали мероприятия */}
-    {/* <div className={styles.detailSection}>
-      <div className={styles.detailLabel}>Детали</div>
-      <div className={styles.detailsGrid}>
-        {event.format && (
-          <div className={styles.detailItem}>
-            <span className={styles.detailKey}>Формат:</span>
-            <span className={styles.detailValue}>{event.format}</span>
-          </div>
-        )}
-        {event.level && (
-          <div className={styles.detailItem}>
-            <span className={styles.detailKey}>Уровень:</span>
-            <span className={styles.detailValue}>{event.level}</span>
-          </div>
-        )}
-        {event.duration && (
-          <div className={styles.detailItem}>
-            <span className={styles.detailKey}>Длительность:</span>
-            <span className={styles.detailValue}>{event.duration}</span>
-          </div>
-        )}
-        {event.price !== undefined && (
-          <div className={styles.detailItem}>
-            <span className={styles.detailKey}>Стоимость:</span>
-            <span className={styles.detailValue}>
-              {event.price === 0 ? 'Бесплатно' : `${event.price} ₽`}
-            </span>
-          </div>
-        )}
-        {event.rules && (
-          <div className={`${styles.detailItem} ${styles.fullWidth}`}>
-            <span className={styles.detailKey}>Правила:</span>
-            <span className={styles.detailValue}>{event.rules}</span>
-          </div>
-        )}
-        {event.equipment && (
-          <div className={`${styles.detailItem} ${styles.fullWidth}`}>
-            <span className={styles.detailKey}>Оборудование:</span>
-            <span className={styles.detailValue}>{event.equipment}</span>
-          </div>
-        )}
-      </div>
-    </div> */}
-
-    {/* Требования
-    {event.requirements && (
-      <div className={styles.detailSection}>
-        <div className={styles.detailLabel}>Требования</div>
-        <p className={styles.detailText}>{event.requirements}</p>
-      </div>
-    )} */}
-
-    {/* Состав команды */}
-    {event.maxParticipants && (
-      <div className={styles.detailSection}>
-        <div className={styles.detailLabel}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-          </svg>
-          Команда
-        </div>
-        <div className={styles.teamProgress}>
-          <div className={styles.progressBar}>
-            <div className={styles.progressFill} style={{ width: `${progressPercent}%` }}/>
-          </div>
-          <span className={styles.progressText}>
-            {event.currentParticipants} из {event.maxParticipants} участников
-          </span>
-        </div>
-        {event.teamName && <div className={styles.teamName}>{event.teamName}</div>}
-      </div>
-    )}
-
-    {/* Дата регистрации */}
-    {event.registeredAt && (
-      <div className={styles.detailSection}>
-        <div className={styles.detailLabel}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
-          </svg>
-          Вы зарегистрировались
-        </div>
-        <span className={styles.detailValue}>{formatRegistrationDate(event.registeredAt)}</span>
-      </div>
-    )}
-
-    {/* Контакты организатора
-    {(event.contactEmail || event.contactPhone) && (
-      <div className={styles.detailSection}>
-        <div className={styles.detailLabel}>Контакты</div>
-        <div className={styles.contactsList}>
-          {event.contactEmail && (
-            <a href={`mailto:${event.contactEmail}`} className={styles.contactLink} onClick={(e) => e.stopPropagation()}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/>
-              </svg>
-              {event.contactEmail}
-            </a>
-          )}
-          {event.contactPhone && (
-            <a href={`tel:${event.contactPhone}`} className={styles.contactLink} onClick={(e) => e.stopPropagation()}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-              </svg>
-              {event.contactPhone}
-            </a>
-          )}
-        </div>
-      </div>
-    )} */}
-
-    {/* Кнопки действий */}
     <div className={styles.cardActions}>
       {event.status !== 'completed' && event.status !== 'cancelled' && (
         <button 
@@ -362,22 +260,24 @@ function MyEvents() {
   const events = useEvents();
   const loading = useEventLoading();
   const error = useEventError();
-
+  const unsubscribeFromEvent = useEventStore((state) => state.unsubscribeFromEvent);
   useEffect(() => {
     fetchEvents();
   }, [fetchEvents]);
+const registeredEvents = events.filter(event => event.isRegistered === true);
 
   const handleUnsubscribe = useCallback(async (eventId) => {
     if (!window.confirm('Вы уверены, что хотите отписаться от мероприятия?')) return;
     try {
-      await API.unsubscribe(eventId);
+      await unsubscribeFromEvent(eventId);
       alert('Вы отписались от мероприятия');
-      fetchEvents();
+      fetchEvents(); // перезагружаем список после отписки
     } catch (err) {
       console.error('Ошибка при отписке:', err);
       alert('Не удалось отписаться. Попробуйте позже.');
     }
-  }, []);
+  }, [fetchEvents]);
+
 
   if (loading && events.length === 0) {
     return (
@@ -417,9 +317,8 @@ function MyEvents() {
     <div className={styles.page}>
       <div className={styles.container}>
         <h1 className={styles.pageTitle}>Мои мероприятия</h1>
-        
         <div className={styles.eventsList}>
-          {events.length === 0 ? (
+          {registeredEvents.length === 0 ? (
             <div className={styles.emptyState}>
               <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/>
@@ -428,7 +327,7 @@ function MyEvents() {
               <p>Зарегистрируйтесь на мероприятие, чтобы оно появилось здесь</p>
             </div>
           ) : (
-            events.map(event => (
+            registeredEvents.map(event => (
               <EventCard
                 key={event.id}
                 event={event}

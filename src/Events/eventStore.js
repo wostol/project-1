@@ -1,182 +1,185 @@
-// stores/eventStore.js
 import { create } from 'zustand';
-import { fetchEventDetails, fetchFullEvent, mergeEventWithDetails } from './Servisedetail.js';
+// ❌ Убираем импорт Servisedetail.js, если он больше нигде не используется
+// import { fetchEventDetails, fetchFullEvent } from './Servisedetail.js';
 import authService from '../authService';
 
-const API_BASE_URL = 'https://songeng.voold.online/api';
+const normalizeEvent = (raw) => {
+  if (!raw) return null;
+
+  const start = new Date(raw.startDate);
+  const end = new Date(raw.endDate);
+  const durationMs = end - start;
+  const hours = Math.floor(durationMs / (1000 * 60 * 60));
+  const minutes = Math.round((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+  const duration = minutes > 0 ? `${hours} ч. ${minutes} мин.` : `${hours} ч.`;
+
+  const reg = raw.userRegistration || {};
+
+  return {
+    id: raw.id,
+    title: raw.title,
+    description: raw.description || '',
+    fullDescription: raw.fullDescription || raw.description || '',
+    
+    // 🎯 Ключевые поля
+    myRole: raw.myRole || raw.registrationType || reg.role || 'participant',
+    registeredAt: raw.registeredAt || reg.registeredAt || raw.createdAt || null,
+    teamName: raw.teamName || reg.teamName || null,
+
+    // 📊 Основные данные
+    startDate: raw.startDate,
+    endDate: raw.endDate,
+    duration,
+    location: raw.location || 'Адрес не указан',
+    organizerId: raw.organizerId,
+    participantPoints: raw.participantPoints || 0,
+    fanPoints: raw.fanPoints || 0,
+    maxParticipants: raw.maxParticipants || 0,
+    currentParticipants: raw.currentParticipants || 0,
+    currentFans: raw.currentFans || 0,
+    
+    // 🛡️ Статус регистрации: приоритет прямого флага, fallback на объект
+    isRegistered: Boolean(raw.isRegistered || reg.status),
+    userRegistration: reg,
+    
+    status: raw.status || 'registration',
+    eventType: raw.eventType || 'event',
+    registrationDeadline: raw.registrationDeadline || null,
+
+    // 🛡️ Дефолты
+    level: raw.level || 'Не указан',
+    price: raw.price ?? 0,
+    requirements: raw.requirements || 'Не указаны',
+    rules: raw.rules || 'Не указаны',
+    equipment: raw.equipment || 'Не требуется',
+    contactEmail: raw.contactEmail || null,
+    contactPhone: raw.contactPhone || null,
+    organizer: raw.organizerId ? `ID: ${raw.organizerId}` : 'Не указан',
+    rewardsPoints: raw.participantPoints || 0,
+  };
+};
 
 const useEventStore = create((set, get) => ({
-  // Состояние
   events: [],
   loading: false,
   error: null,
   selectedEvent: null,
-  forceMockData: false, // Флаг для принудительного использования моков
 
-  // Действия
-  
-  /**
-   * Загрузить все события (базовые данные)
-   */
   fetchEvents: async () => {
     set({ loading: true, error: null });
-    
     try {
-      const { forceMockData } = get();
-      
-      if (forceMockData) {
-        // Для тестов: загружаем моковые события
-        const { mockEventDetails } = await import('./mockEventDetails');
-        const mockEvents = Object.values(mockEventDetails).map(d => ({
-          id: d.id,
-          title: d.title || `Событие #${d.id}`,
-          description: d.fullDescription?.slice(0, 150) + '...',
-          startDate: new Date().toISOString(),
-          status: 'active',
-          participantPoints: d.rewardsPoints || 0,
-          location: d.address || 'Локация не указана',
-        }));
-        set({ events: mockEvents, loading: false });
-        return mockEvents;
-      }
-      
-      const response = await fetch(`${API_BASE_URL}/events`, {
+      const response = await fetch('https://songeng.voold.online/api/events', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
       });
-      
-      if (!response.ok) {
-        throw new Error(`Ошибка API: ${response.status}`);
-      }
-      
+      if (!response.ok) throw new Error(`Ошибка API: ${response.status}`);
       const data = await response.json();
-      set({ events: data, loading: false });
-      return data;
-      
+      const normalized = Array.isArray(data) ? data.map(normalizeEvent) : [];
+      set({ events: normalized, loading: false });
+      return normalized;
     } catch (error) {
-      console.error('❌ Ошибка загрузки событий:', error);
       set({ error: error.message, loading: false });
       return [];
     }
   },
 
-  /**
-   * Загрузить полное событие по ID (базовые данные + детали)
-   */
+  // ✅ Прямой запрос без Servisedetail.js + безопасное слияние
   fetchEventById: async (id) => {
-    const { forceMockData } = get();
     set({ loading: true, error: null });
-    
     try {
-      const event = await fetchFullEvent(id, forceMockData);
-      
-      if (!event) {
-        throw new Error('Событие не найдено');
-      }
-      
-      set({ selectedEvent: event, loading: false });
-      return event;
-      
+      const response = await fetch(`https://songeng.voold.online/api/events/${id}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+      if (!response.ok) throw new Error(`Ошибка API: ${response.status}`);
+      const rawData = await response.json();
+
+      const normalized = normalizeEvent(rawData);
+
+      set((state) => {
+        const existingIndex = state.events.findIndex(e => e.id === normalized.id);
+        
+        // 🔄 Слияние: старые данные + новые. Флаги из списка не теряются.
+        const mergedEvent = existingIndex !== -1
+          ? { ...state.events[existingIndex], ...normalized }
+          : normalized;
+
+        const newEvents = existingIndex !== -1
+          ? state.events.map((e, i) => i === existingIndex ? mergedEvent : e)
+          : [...state.events, mergedEvent];
+
+        return {
+          selectedEvent: mergedEvent,
+          events: newEvents,
+          loading: false,
+        };
+      });
+
+      return normalized;
     } catch (error) {
-      console.error(`❌ Ошибка загрузки события #${id}:`, error);
       set({ error: error.message, loading: false, selectedEvent: null });
       return null;
     }
   },
 
-  /**
-   * Загрузить только детали события (для случаев, когда базовые данные уже есть)
-   */
-  fetchEventDetailsOnly: async (id) => {
-    const { forceMockData } = get();
-    set({ loading: true, error: null });
-    
-    try {
-      const { events, selectedEvent } = get();
-      
-      // Ищем базовые данные в уже загруженных событиях
-      const baseEvent = events.find(e => e.id === parseInt(id)) || 
-                       (selectedEvent?.id === parseInt(id) ? selectedEvent : null);
-      
-      // Загружаем детали (с fallback)
-      const details = await fetchEventDetails(id, forceMockData);
-      
-      // Если есть базовые данные — объединяем
-      const fullEvent = baseEvent 
-        ? mergeEventWithDetails(baseEvent, details) 
-        : details;
-      
-      if (!fullEvent) {
-        throw new Error('Детали не найдены');
-      }
-      
-      set({ selectedEvent: fullEvent, loading: false });
-      return fullEvent;
-      
-    } catch (error) {
-      console.error(`❌ Ошибка загрузки деталей #${id}:`, error);
-      set({ error: error.message, loading: false });
-      return null;
-    }
-  },
-
-  /**
-   * Получить событие из уже загруженного списка
-   */
+  fetchEventDetailsOnly: async (id) => get().fetchEventById(id),
   getEventFromList: (id) => {
     const { events } = get();
-    return events.find(e => e.id === parseInt(id)) || null;
+    return events.find((e) => e.id === parseInt(id)) || null;
   },
-
-  /**
-   * Обновить данные события в списке (после регистрации и т.п.)
-   */
   updateEvent: (id, updates) => {
     set((state) => ({
-      events: state.events.map(e =>
-        e.id === parseInt(id) ? { ...e, ...updates } : e
-      ),
+      events: state.events.map((e) => (e.id === parseInt(id) ? { ...e, ...updates } : e)),
       selectedEvent: state.selectedEvent?.id === parseInt(id)
         ? { ...state.selectedEvent, ...updates }
         : state.selectedEvent,
     }));
   },
-
-  /**
-   * Зарегистрироваться на мероприятие
-   */
   registerForEvent: async (eventId, registrationType) => {
     set({ loading: true, error: null });
-
     try {
       const result = await authService.registerForEvent(eventId, registrationType);
-      
-      // Обновляем данные события после регистрации
-      if (result.event) {
-        get().updateEvent(eventId, result.event);
-      }
-
+      await get().fetchEventById(eventId);
       set({ loading: false });
       return result;
-
     } catch (error) {
       console.error(`❌ Ошибка регистрации на событие #${eventId}:`, error);
       set({ error: error.message, loading: false });
       throw error;
     }
   },
-
-  // Утилиты
+  unsubscribeFromEvent: async (eventId) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await fetch(`https://songeng.voold.online/api/events/${eventId}/unregister`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Ошибка API: ${response.status}`);
+      }
+      set((state) => ({
+        events: state.events.filter((e) => e.id !== eventId),
+        selectedEvent: state.selectedEvent?.id === eventId ? null : state.selectedEvent,
+        loading: false,
+      }));
+      return { success: true };
+    } catch (error) {
+      console.error(`❌ Ошибка отписки от события #${eventId}:`, error);
+      set({ error: error.message, loading: false });
+      throw error;
+    }
+  },
   clearSelectedEvent: () => set({ selectedEvent: null }),
   clearError: () => set({ error: null }),
-  setForceMockData: (value) => set({ forceMockData: value }),
 }));
 
-// Селекторы
 export const useEvents = () => useEventStore((state) => state.events);
 export const useEventLoading = () => useEventStore((state) => state.loading);
 export const useEventError = () => useEventStore((state) => state.error);
 export const useSelectedEvent = () => useEventStore((state) => state.selectedEvent);
-export const useForceMockData = () => useEventStore((state) => state.forceMockData);
-
 export default useEventStore;

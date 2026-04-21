@@ -110,7 +110,7 @@ class AuthService {
         credentials: 'include',
         body: JSON.stringify({
           eventId: eventId,
-          userId: user?.id,
+          // userId: user?.id,
           registrationType: registrationType,
         }),
       });
@@ -121,14 +121,15 @@ class AuthService {
       }
 
       const data = await response.json();
-      console.log('✅ Регистрация успешна:', data);
+      console.log('Регистрация успешна:', data);
       return data;
 
     } catch (error) {
-      console.error('❌ Ошибка регистрации:', error);
+      console.error('Ошибка регистрации:', error);
       throw error;
     }
   }
+  
 }
 
 export default new AuthService();
