@@ -16,7 +16,7 @@ const Header = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user, login, logout, loading } = useAuth();
   // const { isAuthenticated, login, logout, user, loading } = useAuth();
-  
+
   const [cartItemsCount, setCartItemsCount] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -187,7 +187,7 @@ const Header = () => {
     login(); // Запускаем OAuth авторизацию
     setIsMenuOpen(false);
   };
-  
+
 
   const handleLogoutClick = () => {
     logout(); // Выход из системы
@@ -231,7 +231,7 @@ const Header = () => {
   if (loading) {
     return (
       <header className='header'>
-        
+
         <div className='header-container'>
           <div className='logo'>
             <img src={logo} alt='Connections Logo' className='logo-image' />
@@ -446,7 +446,7 @@ const Header = () => {
                       </span>
                     </button>
                   </Link>
-                  
+
                   {/* Кнопка выхода для мобильной версии */}
 
                 </div>
@@ -456,6 +456,18 @@ const Header = () => {
                   onClick={handleLoginClick}
                   aria-label='Войти'
                 >
+                  <span className='btn-icon-wrapper'>
+                    <svg
+                      className='btn-svg'
+                      width='24'
+                      height='24'
+                      viewBox='0 0 24 24'
+                      fill='none'
+                      xmlns='http://www.w3.org/2000/svg'
+                    >
+                      <use href='#icon-login'></use>
+                    </svg>
+                  </span>
                   <span className='btn-text'>Войти</span>
                 </button>
               )}
@@ -466,7 +478,7 @@ const Header = () => {
               <defs>
                 <symbol id='icon-heart' viewBox="0 0 32 30" fill='none'>
                   <path
-                    d="M28.6867 3.21018C27.9537 2.50949 27.0833 1.95365 26.1254 1.57442C25.1675 1.19519 24.1407 1 23.1038 1C22.0669 1 21.0402 1.19519 20.0822 1.57442C19.1243 1.95365 18.254 2.50949 17.5209 3.21018L15.9996 4.66368L14.4783 3.21018C12.9976 1.7955 10.9894 1.00073 8.89541 1.00073C6.80142 1.00073 4.79319 1.7955 3.31251 3.21018C1.83184 4.62487 1 6.54359 1 8.54426C1 10.5449 1.83184 12.4637 3.31251 13.8783L4.83382 15.3318L15.9996 26L27.1654 15.3318L28.6867 13.8783C29.4201 13.178 30.0019 12.3464 30.3988 11.4312C30.7957 10.5159 31 9.53496 31 8.54426C31 7.55356 30.7957 6.57258 30.3988 5.65734C30.0019 4.7421 29.4201 3.91054 28.6867 3.21018Z"           
+                    d="M28.6867 3.21018C27.9537 2.50949 27.0833 1.95365 26.1254 1.57442C25.1675 1.19519 24.1407 1 23.1038 1C22.0669 1 21.0402 1.19519 20.0822 1.57442C19.1243 1.95365 18.254 2.50949 17.5209 3.21018L15.9996 4.66368L14.4783 3.21018C12.9976 1.7955 10.9894 1.00073 8.89541 1.00073C6.80142 1.00073 4.79319 1.7955 3.31251 3.21018C1.83184 4.62487 1 6.54359 1 8.54426C1 10.5449 1.83184 12.4637 3.31251 13.8783L4.83382 15.3318L15.9996 26L27.1654 15.3318L28.6867 13.8783C29.4201 13.178 30.0019 12.3464 30.3988 11.4312C30.7957 10.5159 31 9.53496 31 8.54426C31 7.55356 30.7957 6.57258 30.3988 5.65734C30.0019 4.7421 29.4201 3.91054 28.6867 3.21018Z"
                     fill="currentColor"
                   />
                 </symbol>
@@ -484,6 +496,12 @@ const Header = () => {
                     fill='currentColor'
                   />
                 </symbol>
+<symbol id='icon-login' viewBox='0 0 24 24' fill='none'>
+  <path
+    d='M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z'
+    fill='currentColor'
+  />
+</symbol>
               </defs>
             </svg>
           </ul>

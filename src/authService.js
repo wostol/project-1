@@ -7,6 +7,19 @@ class AuthService {
   constructor() {
     this.tokenKey = 'auth_token';
     this.userKey = 'user_data';
+    this.isRefreshing = false;
+    this.refreshSubscribers = [];
+  }
+
+  // Добавляем подписчика на очередь запросов во время refresh
+  subscribeTokenRefresh(cb) {
+    this.refreshSubscribers.push(cb);
+  }
+
+  // Выполняем все запросы из очереди после успешного refresh
+  onTokenRefreshed() {
+    this.refreshSubscribers.forEach(cb => cb());
+    this.refreshSubscribers = [];
   }
 
   login() {
@@ -24,7 +37,7 @@ class AuthService {
   async handleCallback(searchParams) {
     try {
       const result = oauthCodeHandler(searchParams);
-      
+
       if (!result) {
         // Это нормально, если нет кода в URL
         return false;
@@ -32,7 +45,7 @@ class AuthService {
 
       console.log('📡 Отправка кода на бэкенд...');
       const tokenData = await this.exchangeCodeForToken(result.code, result.codeVerifier);
-      
+
       if (tokenData && tokenData.user) {
         this.setUser(tokenData.user);
         if (tokenData.token) {
@@ -41,7 +54,7 @@ class AuthService {
         console.log('✅ Пользователь авторизован:', tokenData.user.email);
         return true;
       }
-      
+
       return false;
     } catch (error) {
       console.error('❌ Ошибка при обработке callback:', error);
@@ -49,14 +62,88 @@ class AuthService {
     }
   }
 
-  async exchangeCodeForToken(code, codeVerifier) {
+  async refreshAccessToken() {
     try {
-      const response = await fetch('https://songeng.voold.online/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
+        credentials: 'include', // Важно для отправки cookies с refresh_token
+      });
+
+      if (!response.ok) {
+        throw new Error(`Ошибка ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('✅ Токен обновлён');
+
+      if (data.token) {
+        this.setToken(data.token);
+      }
+
+      return true;
+    } catch (error) {
+      console.error('❌ Ошибка при обновлении токена:', error);
+      return false;
+    }
+  }
+
+  // Метод для выполнения запроса с автоматическим refresh при 401
+  async fetchWithRefresh(url, options = {}) {
+    // Первый запрос
+    let response = await fetch(url, {
+      ...options,
+      credentials: 'include',
+    });
+
+    // Если получили 401 - пытаемся обновить токен
+    if (response.status === 401) {
+      // Если уже идёт refresh, ждём его завершения
+      if (this.isRefreshing) {
+        return new Promise((resolve) => {
+          this.subscribeTokenRefresh(() => {
+            // Повторяем исходный запрос после успешного refresh
+            fetch(url, {
+              ...options,
+              credentials: 'include',
+            }).then(resolve);
+          });
+        });
+      }
+
+      // Запускаем refresh
+      this.isRefreshing = true;
+      const refreshSuccess = await this.refreshAccessToken();
+      this.isRefreshing = false;
+
+      if (refreshSuccess) {
+        // Уведомляем всех подписчиков, что токен обновлён
+        this.onTokenRefreshed();
+
+        // Повторяем исходный запрос
+        response = await fetch(url, {
+          ...options,
+          credentials: 'include',
+        });
+      } else {
+        // Refresh не удался - разлогиниваем пользователя
+        this.logout();
+        throw new Error('Сессия истекла. Пожалуйста, войдите снова.');
+      }
+    }
+
+    return response;
+  }
+
+  async exchangeCodeForToken(code, codeVerifier) {
+    try {
+      const response = await this.fetchWithRefresh('https://songeng.voold.online/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           code: code,
           codeVerifier: codeVerifier
@@ -70,7 +157,7 @@ class AuthService {
       const data = await response.json();
       console.log('✅ Данные получены');
       return data;
-      
+
     } catch (error) {
       console.error('❌ Ошибка:', error);
       throw error;
@@ -102,12 +189,11 @@ class AuthService {
     try {
       const user = this.getUser();
 
-      const response = await fetch(`${API_BASE_URL}/events/${eventId}/register`, {
+      const response = await this.fetchWithRefresh(`${API_BASE_URL}/events/${eventId}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        credentials: 'include',
         body: JSON.stringify({
           eventId: eventId,
           // userId: user?.id,
@@ -129,7 +215,7 @@ class AuthService {
       throw error;
     }
   }
-  
+
 }
 
 export default new AuthService();

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import './ProfilePage.css'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import cap from '../image/cap.png'
 import pen from '../image/pen.png'
 import logo from '../component/lionsib.svg'
 import useAuth from '../auth/useAuth'
+import authService from '../authService'
 
 function ProfilePage () {
-  const [activeTab, setActiveTab] = useState('achievements')
+  const [searchParams] = useSearchParams()
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'achievements')
   const [userInfo, setUserInfo] = useState(null)
   const [userLevel, setUserLevel] = useState(null)
   const [userAchievements, setUserAchievements] = useState(null)
@@ -21,7 +23,7 @@ function ProfilePage () {
   useEffect(() => {
     const fetchLevels = async () => {
       try {
-        const response = await fetch('/api/levels') // ← Замените на ваш endpoint
+        const response = await authService.fetchWithRefresh('/api/levels') // ← Замените на ваш endpoint
         const data = await response.json()
         setAllLevels(data)
       } catch (error) {
@@ -668,7 +670,7 @@ function ProfilePage () {
           <div className='event-history-badge winner'>Победитель</div>
         </div>
       </div>
-      
+
       {/* <button className='load-more-btn'>
         Загрузить еще
         <svg width='16' height='16' viewBox='0 0 24 24' fill='currentColor'>

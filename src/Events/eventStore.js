@@ -16,11 +16,11 @@ const normalizeEvent = (raw) => {
   const reg = raw.userRegistration || {};
 
   return {
-    id: raw.id,
+    id: raw.uuid,
     title: raw.title,
     description: raw.description || '',
     fullDescription: raw.fullDescription || raw.description || '',
-    
+
     // 🎯 Ключевые поля
     myRole: raw.myRole || raw.registrationType || reg.role || 'participant',
     registeredAt: raw.registeredAt || reg.registeredAt || raw.createdAt || null,
@@ -37,11 +37,11 @@ const normalizeEvent = (raw) => {
     maxParticipants: raw.maxParticipants || 0,
     currentParticipants: raw.currentParticipants || 0,
     currentFans: raw.currentFans || 0,
-    
+
     // 🛡️ Статус регистрации: приоритет прямого флага, fallback на объект
     isRegistered: Boolean(raw.isRegistered || reg.status),
     userRegistration: reg,
-    
+
     status: raw.status || 'registration',
     eventType: raw.eventType || 'event',
     registrationDeadline: raw.registrationDeadline || null,
@@ -68,10 +68,9 @@ const useEventStore = create((set, get) => ({
   fetchEvents: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch('https://songeng.voold.online/api/events', {
+      const response = await authService.fetchWithRefresh('https://songeng.voold.online/api/events', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
       });
       if (!response.ok) throw new Error(`Ошибка API: ${response.status}`);
       const data = await response.json();
@@ -88,10 +87,9 @@ const useEventStore = create((set, get) => ({
   fetchEventById: async (id) => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch(`https://songeng.voold.online/api/events/${id}`, {
+      const response = await authService.fetchWithRefresh(`https://songeng.voold.online/api/events/${id}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
       });
       if (!response.ok) throw new Error(`Ошибка API: ${response.status}`);
       const rawData = await response.json();
@@ -100,7 +98,7 @@ const useEventStore = create((set, get) => ({
 
       set((state) => {
         const existingIndex = state.events.findIndex(e => e.id === normalized.id);
-        
+
         // 🔄 Слияние: старые данные + новые. Флаги из списка не теряются.
         const mergedEvent = existingIndex !== -1
           ? { ...state.events[existingIndex], ...normalized }
@@ -153,10 +151,9 @@ const useEventStore = create((set, get) => ({
   unsubscribeFromEvent: async (eventId) => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch(`https://songeng.voold.online/api/events/${eventId}/unregister`, {
+      const response = await authService.fetchWithRefresh(`https://songeng.voold.online/api/events/${eventId}/unregister`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
       });
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

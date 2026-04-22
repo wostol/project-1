@@ -179,11 +179,11 @@
   position: absolute;
   inset: 0;
   border-radius: 25px;
-  background: linear-gradient(135deg, 
-    #001d3d 0%, 
-    #003466 25%, 
-    #1754A1 50%, 
-    #2a6fb0 75%, 
+  background: linear-gradient(135deg,
+    #001d3d 0%,
+    #003466 25%,
+    #1754A1 50%,
+    #2a6fb0 75%,
     #003466 100%
   );
   opacity: 0;
@@ -196,11 +196,11 @@
   position: absolute;
   inset: -2px;
   border-radius: 27px;
-  background: linear-gradient(45deg, 
-    #003466, 
-    #1754A1, 
-    #28be46, 
-    #1754A1, 
+  background: linear-gradient(45deg,
+    #003466,
+    #1754A1,
+    #28be46,
+    #1754A1,
     #003466
   );
   transition: opacity 0.5s ease;
@@ -258,15 +258,16 @@
 .btn-text {
   position: absolute;
   color: #fff;
-  font-size: 1.1em;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: clamp(0.9375rem, 0.875rem + 0.25vw, 1.125rem);
+  font-weight: 500;
+  letter-spacing: 0.02em; 
+  font-family: var(--font-family-base) ;
+  text-transform: none;
   transform: scale(0);
   transition: 0.5s;
   transition-delay: 0s;
   white-space: nowrap;
   z-index: 2;
-  font-weight: 500;
 }
 
 .blue-btn:hover .btn-text {
@@ -338,9 +339,10 @@
 .burger-menu {
   display: none;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
+  align-items: center;
   width: 30px;
-  height: 25px;
+  height: 30px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -353,23 +355,37 @@
   width: 30px;
   height: 3px;
   background: #003466;
-  border-radius: 10px;
-  transition: all 0.3s linear;
-  position: relative;
-  transform-origin: 1px;
+  border-radius: 2px;
+  transition: all 0.3s ease-in-out;
+  position: absolute;
+  left: 0;
+  transform-origin: center;
+}
+
+.burger-menu span:first-child {
+  top: 6px;
+}
+
+.burger-menu span:nth-child(2) {
+  top: 13.5px;
+}
+
+.burger-menu span:nth-child(3) {
+  top: 21px;
 }
 
 .burger-menu.open span:first-child {
   transform: rotate(45deg);
+  top: 13.5px;
 }
 
 .burger-menu.open span:nth-child(2) {
   opacity: 0;
-  transform: translateX(-20px);
 }
 
 .burger-menu.open span:nth-child(3) {
   transform: rotate(-45deg);
+  top: 13.5px;
 }
 
 /* =========================== */
@@ -385,7 +401,7 @@
   .header {
     padding: 0 50px;
   }
-  
+
   .nav-link {
     font-size: 20px;
     padding: 6px 12px;
@@ -427,14 +443,30 @@
     background: #003466 !important;
     transform: none !important;
   }
-  .btn-text { display: none !important; }
-  .btn-icon-wrapper { transform: scale(1) !important; }
-  .btn-badge { 
-    top: -2px; 
-    right: -2px; 
-    width: 16px; 
-    height: 16px; 
-    font-size: 10px; 
+  /* Активное состояние в мобильном меню - белый фон, синяя иконка */
+  .blue-btn.active {
+    background: white !important;
+    box-shadow: 0px 0px 4px 2px #003466 !important;
+  }
+  .blue-btn.active .btn-svg {
+    color: #003466 !important;
+    fill: #003466 !important;
+  }
+  .blue-btn.active:hover {
+    background: white !important;
+  }
+  .blue-btn.active .btn-icon-wrapper {
+    transform: scale(1) !important;
+  }
+  .blue-btn.active .btn-text {
+    display: none !important;
+  }
+  .btn-badge {
+    top: -2px;
+    right: -2px;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
   }
   .header-container {
     padding: 0.8rem 0;
@@ -537,6 +569,14 @@
   .main-nav .btn-icon-wrapper {
     transform: scale(1) !important;
     /* Фиксируем иконки */
+  }
+
+  /* Увеличиваем ширину кнопки для "Мои мероприятия" в мобильном меню */
+
+  /* Центрируем текст на кнопках в мобильном меню */
+  .main-nav .nav-link {
+    text-align: center;
+    justify-content: center;
   }
 }
 
