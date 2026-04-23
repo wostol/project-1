@@ -8,7 +8,7 @@ import useEventStore, {
 import EventCard from '../component/EventCard/EventCard.js';
 import styles from './MyEvents.module.css';
 function MyEvents() {
-  const fetchEvents = useEventStore((state) => state.fetchEvents);
+  const fetchMyEvents = useEventStore((state) => state.fetchMyEvents);
   const fetchEventDetails = useEventStore((state) => state.fetchEventDetailsOnly);
   const updateEvent = useEventStore((state) => state.updateEvent);
   const events = useEvents();
@@ -17,8 +17,8 @@ function MyEvents() {
   const unsubscribeFromEvent = useEventStore((state) => state.unsubscribeFromEvent);
 
   useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
+    fetchMyEvents();
+  }, [fetchMyEvents]);
 
   const registeredEvents = events.filter(event => event.isRegistered === true);
 
@@ -27,12 +27,12 @@ function MyEvents() {
     try {
       await unsubscribeFromEvent(eventId);
       alert('Вы отписались от мероприятия');
-      fetchEvents(); // перезагружаем список после отписки
+      fetchMyEvents(); // перезагружаем список после отписки
     } catch (err) {
       console.error('Ошибка при отписке:', err);
       alert('Не удалось отписаться. Попробуйте позже.');
     }
-  }, [fetchEvents, unsubscribeFromEvent]);
+  }, [fetchMyEvents, unsubscribeFromEvent]);
 
 
   if (loading && events.length === 0) {
@@ -60,7 +60,7 @@ function MyEvents() {
             </svg>
             <h3>Ошибка загрузки</h3>
             <p>{error}</p>
-            <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={fetchEvents}>
+            <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={fetchMyEvents}>
               Повторить
             </button>
           </div>

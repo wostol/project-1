@@ -83,9 +83,50 @@ const useEventStore = create((set, get) => ({
     }
   },
 
-  // ✅ Прямой запрос без Servisedetail.js + безопасное слияние
-  fetchEventById: async (id) => {
+  // ✅ Загрузка мероприятий пользователя с ПОЛНЫМИ данными
+  fetchMyEvents: async () => {
     set({ loading: true, error: null });
+    try {
+      // Сначала загружаем все мероприятия
+      const response = await authService.fetchWithRefresh('https://songeng.voold.online/api/events', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!response.ok) throw new Error(`Ошибка API: ${response.status}`);
+      const data = await response.json();
+
+      // Фильтруем только зарегистрированные мероприятия
+      const registeredEvents = Array.isArray(data) ? data.filter(e => e.isRegistered) : [];
+
+      // Нормализуем и загружаем полные детали для каждого события
+      const normalized = registeredEvents.map(normalizeEvent);
+
+      // Загружаем полные детали для каждого события, чтобы получить все поля
+      const fullEvents = await Promise.all(
+        normalized.map(async (event) => {
+          try {
+            const fullEvent = await get().fetchEventById(event.id, true);
+            return fullEvent || event;
+          } catch (err) {
+            console.warn(`Не удалось загрузить детали для события ${event.id}:`, err);
+            return event;
+          }
+        })
+      );
+
+      set({ events: fullEvents, loading: false });
+      return fullEvents;
+    } catch (error) {
+      set({ error: error.message, loading: false });
+      return [];
+    }
+  },
+
+  // ✅ Прямой запрос без Servisedetail.js + безопасное слияние
+  fetchEventById: async (id, skipLoadingState = false) => {
+    if (!skipLoadingState) {
+      set({ loading: true, error: null });
+    }
     try {
       const response = await authService.fetchWithRefresh(`https://songeng.voold.online/api/events/${id}`, {
         method: 'GET',
@@ -111,13 +152,15 @@ const useEventStore = create((set, get) => ({
         return {
           selectedEvent: mergedEvent,
           events: newEvents,
-          loading: false,
+          loading: skipLoadingState ? state.loading : false,
         };
       });
 
       return normalized;
     } catch (error) {
-      set({ error: error.message, loading: false, selectedEvent: null });
+      if (!skipLoadingState) {
+        set({ error: error.message, loading: false, selectedEvent: null });
+      }
       return null;
     }
   },

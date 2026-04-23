@@ -197,6 +197,38 @@ CSS-переменные (дополняем существующие)
   font-weight: var(--font-weight-medium);
 }
 
+/* Блок участников */
+.participantsBlock {
+  display: flex;
+  align-items: stretch;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-bg-white);
+  border-radius: var(--border-radius-sm);
+}
+
+.participantsText {
+  font-size: var(--font-size-lg);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Блок регистрации */
+.registrationBlock {
+  display: flex;
+  align-items: stretch;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-bg-white);
+  border-radius: var(--border-radius-sm);
+}
+
+.registrationText {
+  font-size: var(--font-size-lg);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+}
+
 /* Иконка - теперь такой же высоты, как и блок dateTimeBlock */
 .infoIcon {
   color: var(--color-primary);
@@ -238,6 +270,18 @@ CSS-переменные (дополняем существующие)
   color: var(--color-primary);
   border-radius: var(--border-radius-pill);
   font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.roleBadgeExpanded {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--color-primary);
+  color: white;
+  border-radius: var(--border-radius-pill);
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
 }
 

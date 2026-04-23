@@ -21,6 +21,13 @@ const calculateDuration = (start, end) => {
   return minutes === 0 ? `${hours} ч.` : `${hours} ч. ${minutes} мин.`;
 };
 
+// Форматирование времени (начала мероприятия)
+const formatTime = (isoString) => {
+  if (!isoString) return '';
+  const d = new Date(isoString);
+  return d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+};
+
 // Конфигурация статусов
 const getStatusConfig = (status) => {
   const configs = {
@@ -80,7 +87,13 @@ const EventCard = ({ event, onUnsubscribe, fetchEventDetails, updateEvent }) => 
   const handleExpand = async (e) => {
     if (e.target.closest(`.${styles.cardAction}`)) return;
 
-    const newExpandedState = !isExpanded;
+    // Если уже раскрыто - закрываем при клике
+    if (isExpanded) {
+      setIsExpanded(false);
+      return;
+    }
+
+    const newExpandedState = true;
     setIsExpanded(newExpandedState);
 
     // Ленивая загрузка: если нет описания — подгружаем детали
@@ -144,7 +157,7 @@ const EventCard = ({ event, onUnsubscribe, fetchEventDetails, updateEvent }) => 
             </svg>
             <div className={styles.dateTimeText}>
               <span className={styles.dateText}>{formatDate(event.startDate)}</span>
-              <span className={styles.timeText}>{calculateDuration(event.startDate, event.endDate)}</span>
+              <span className={styles.timeText}>в {formatTime(event.startDate)}</span>
             </div>
           </div>
 
@@ -165,7 +178,58 @@ const EventCard = ({ event, onUnsubscribe, fetchEventDetails, updateEvent }) => 
       </div>
 
       {isExpanded && (
-        <div className={styles.details} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.details}>
+          {/* Прогресс участников */}
+          {event.maxParticipants > 0 && (
+            <div className={styles.detailSection}>
+              <div className={styles.detailLabel}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                </svg>
+                Участники
+              </div>
+              <div className={styles.teamProgress}>
+                <div className={styles.progressBar}>
+                  <div
+                    className={styles.progressFill}
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+                <div className={styles.progressText}>
+                  {event.currentParticipants} из {event.maxParticipants} участников ({progressPercent}%)
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Дата регистрации */}
+          {event.registeredAt && (
+            <div className={styles.detailSection}>
+              <div className={styles.detailLabel}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                Дата регистрации
+              </div>
+              <div className={styles.detailValue}>
+                {formatDate(event.registeredAt)} в {formatTime(event.registeredAt)}
+              </div>
+            </div>
+          )}
+
+          {/* Время проведения (длительность) */}
+          <div className={styles.detailSection}>
+            <div className={styles.detailLabel}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+              </svg>
+              Длительность мероприятия
+            </div>
+            <div className={styles.detailValue}>
+              {calculateDuration(event.startDate, event.endDate)}
+            </div>
+          </div>
+
           <div className={styles.detailSection}>
             <div className={styles.detailLabel}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
