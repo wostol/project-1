@@ -16,7 +16,10 @@ const EventsPage = () => {
   const error = useEventError();
   const fetchEvents = useEventStore((state) => state.fetchEvents);
 
-  // Проверяем, был ли редирект с защищенной страницы
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
+
   useEffect(() => {
     const returnUrl = sessionStorage.getItem('returnUrl');
     console.log(returnUrl)
@@ -29,10 +32,8 @@ const EventsPage = () => {
   const handleCloseDialog = () => {
     setShowAuthDialog(false);
   };
-
   const toggleSearch = () => {
     setIsSearchOpen(prev => !prev);
-    // Автофокус после завершения анимации раскрытия
     setTimeout(() => {
       if (searchInputRef.current) searchInputRef.current.focus();
     }, 300);

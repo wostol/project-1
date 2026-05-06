@@ -11,6 +11,12 @@
   z-index: 1000;
 }
 
+.noScroll {
+  overflow: hidden !important;
+  height: 100%;
+  width: 100%;
+}
+
 .dialog {
   background: white;
   border-radius: 12px;

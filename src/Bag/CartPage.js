@@ -1,23 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './CartPage.module.css';
+import useAuth from '../auth/useAuth';
 
 function CartPage() {
   const [cartItems, setCartItems] = useState([]);
-  const [userPoints, setUserPoints] = useState(1000);
   const [loading, setLoading] = useState(true);
+  const {user, isAuthenticated } = useAuth();
 
+  const userPoints = isAuthenticated && user?.totalPoints ? user.totalPoints : 0;
   useEffect(() => {
     const loadCartFromStorage = () => {
       try {
         const savedCart = JSON.parse(localStorage.getItem('cart') || '[]');
         setCartItems(savedCart);
         updateHeaderBadge(savedCart.reduce((sum, item) => sum + (item.quantity || 1), 0));
-        
-        const savedPoints = localStorage.getItem('userPoints');
-        if (savedPoints) {
-          setUserPoints(parseInt(savedPoints));
-        }
       } catch (error) {
         console.error('Ошибка загрузки корзины:', error);
         setCartItems([]);
@@ -72,7 +69,7 @@ function CartPage() {
       alert('Корзина пуста');
       return;
     }
-    const totalPointsCost = cartItems.reduce((sum, item) => 
+    const totalPointsCost = cartItems.reduce((sum, item) =>
       sum + ((item.pricePoints || item.price || 0) * (item.quantity || 1)), 0);
 
     if (userPoints < totalPointsCost) {
@@ -83,13 +80,11 @@ function CartPage() {
 
     if (window.confirm(`Оплатить заказ на сумму ${totalPointsCost} баллов?\nПосле оплаты у вас останется: ${userPoints - totalPointsCost} баллов`)) {
       const newPointsBalance = userPoints - totalPointsCost;
-      setUserPoints(newPointsBalance);
-      localStorage.setItem('userPoints', newPointsBalance.toString());
-      
+
       setCartItems([]);
       localStorage.setItem('cart', '[]');
       updateHeaderBadge(0);
-      
+
       alert(`Заказ успешно оформлен!\nСписано: ${totalPointsCost} баллов\nОстаток: ${newPointsBalance} баллов\nСпасибо за покупку!`);
     }
   };
@@ -182,17 +177,17 @@ function CartPage() {
 
           <div className={styles.cartSummary}>
             <h2>Итого</h2>
-            
+
             <div className={styles.cartSummaryItem}>
               <span className={styles.summaryLabel}>Товары ({cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0)} шт.)</span>
               <span className={styles.summaryValue}>{totalPointsCost} баллов</span>
             </div>
-            
+
             <div className={styles.cartSummaryItem}>
               <span className={styles.summaryLabel}>Доставка</span>
               <span className={styles.summaryValue}>Бесплатно</span>
             </div>
-            
+
             <div className={styles.cartSummaryItem}>
               <span className={styles.summaryLabel}>Ваш баланс</span>
               <span className={styles.summaryValue} style={{
@@ -211,7 +206,7 @@ function CartPage() {
                 </span>
               </div>
             )}
-            
+
             <div className={styles.cartSummaryItem}>
               <span className={`${styles.summaryLabel} ${styles.summaryTotal}`}>К оплате</span>
               <span className={`${styles.summaryValue} ${styles.summaryTotal}`}>{totalPointsCost} баллов</span>
@@ -226,7 +221,7 @@ function CartPage() {
               </div>
             )}
 
-            <button 
+            <button
               className={`${styles.checkoutBtn} ${!canAfford ? styles.disabled : ''}`}
               onClick={handleCheckout}
               disabled={!canAfford}

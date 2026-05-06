@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import styles from './ConfirmDialog.module.css';
 
 const ConfirmDialog = ({
@@ -9,8 +10,22 @@ const ConfirmDialog = ({
   confirmText = 'Подтвердить',
   cancelText = 'Отмена',
   isLoading = false,
-  showCancel = true // Новый проп для управления отображением кнопки отмены
+  showCancel = true 
 }) => {
+  // Блокировка прокрутки страницы при открытом диалоге
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add(styles.noScroll);
+    } else {
+      document.body.classList.remove(styles.noScroll);
+    }
+
+    // Очистка при размонтировании или закрытии
+    return () => {
+      document.body.classList.remove(styles.noScroll);
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
