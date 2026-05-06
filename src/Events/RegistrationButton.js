@@ -12,7 +12,7 @@ const RegistrationButton = ({
   const [error, setError] = useState(null);
 
   const isDisabled = (registrationType === 'participant' && !canRegisterAsParticipant) ||
-                     (registrationType === 'spectator' && !canRegisterAsSpectator);
+                     (registrationType === 'fan' && !canRegisterAsSpectator);
 
   const getButtonText = () => {
     if (registrationType === 'participant') {

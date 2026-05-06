@@ -6,6 +6,7 @@ import pen from '../image/pen.png'
 import logo from '../component/lionsib.svg'
 import useAuth from '../auth/useAuth'
 import authService from '../authService'
+import { apiRequest } from '../auth/apiClient'
 
 function ProfilePage () {
   const [searchParams] = useSearchParams()
@@ -23,8 +24,7 @@ function ProfilePage () {
   useEffect(() => {
     const fetchLevels = async () => {
       try {
-        const response = await authService.fetchWithRefresh('/api/levels') // ← Замените на ваш endpoint
-        const data = await response.json()
+        const data = await apiRequest('/levels')
         setAllLevels(data)
       } catch (error) {
         console.error('Ошибка загрузки уровней:', error)

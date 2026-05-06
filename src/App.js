@@ -30,7 +30,6 @@ function App() {
   return (
     <Router>
       <div className="App">
-        {/* AuthInitializer теперь оборачивает всё приложение */}
         <AuthInitializer>
           <Header />
           

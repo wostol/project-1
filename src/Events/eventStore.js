@@ -2,6 +2,7 @@ import { create } from 'zustand';
 // ❌ Убираем импорт Servisedetail.js, если он больше нигде не используется
 // import { fetchEventDetails, fetchFullEvent } from './Servisedetail.js';
 import authService from '../authService';
+import { apiRequest } from '../auth/apiClient';
 
 const normalizeEvent = (raw) => {
   if (!raw) return null;
@@ -68,12 +69,9 @@ const useEventStore = create((set, get) => ({
   fetchEvents: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await authService.fetchWithRefresh('https://songeng.voold.online/api/events', {
+      const data = await apiRequest('/events', {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
       });
-      if (!response.ok) throw new Error(`Ошибка API: ${response.status}`);
-      const data = await response.json();
       const normalized = Array.isArray(data) ? data.map(normalizeEvent) : [];
       set({ events: normalized, loading: false });
       return normalized;
@@ -88,12 +86,9 @@ const useEventStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       // Сначала загружаем все мероприятия
-      const response = await authService.fetchWithRefresh('https://songeng.voold.online/api/events', {
+      const data = await apiRequest('/events', {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
       });
-      if (!response.ok) throw new Error(`Ошибка API: ${response.status}`);
-      const data = await response.json();
 
       // Фильтруем только зарегистрированные мероприятия
       const registeredEvents = Array.isArray(data) ? data.filter(e => e.isRegistered) : [];
@@ -128,12 +123,9 @@ const useEventStore = create((set, get) => ({
       set({ loading: true, error: null });
     }
     try {
-      const response = await authService.fetchWithRefresh(`https://songeng.voold.online/api/events/${id}`, {
+      const rawData = await apiRequest(`/events/${id}`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
       });
-      if (!response.ok) throw new Error(`Ошибка API: ${response.status}`);
-      const rawData = await response.json();
 
       const normalized = normalizeEvent(rawData);
 
@@ -181,7 +173,13 @@ const useEventStore = create((set, get) => ({
   registerForEvent: async (eventId, registrationType) => {
     set({ loading: true, error: null });
     try {
-      const result = await authService.registerForEvent(eventId, registrationType);
+      const result = await apiRequest(`/events/${eventId}/register`, {
+        method: 'POST',
+        body: JSON.stringify({
+          eventId: eventId,
+          registrationType: registrationType,
+        }),
+      });
       await get().fetchEventById(eventId);
       set({ loading: false });
       return result;
@@ -194,14 +192,9 @@ const useEventStore = create((set, get) => ({
   unsubscribeFromEvent: async (eventId) => {
     set({ loading: true, error: null });
     try {
-      const response = await authService.fetchWithRefresh(`https://songeng.voold.online/api/events/${eventId}/unregister`, {
+      const result = await apiRequest(`/events/${eventId}/unregister`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
       });
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Ошибка API: ${response.status}`);
-      }
       set((state) => ({
         events: state.events.filter((e) => e.id !== eventId),
         selectedEvent: state.selectedEvent?.id === eventId ? null : state.selectedEvent,

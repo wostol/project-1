@@ -5,10 +5,9 @@ import useEventStore, {
   useEventLoading,
   useEventError
 } from './eventStore';
+import { useIsAuthenticated } from '../auth/authStore'; 
 import './EventDetail.css';
 import logo from '../image/lionsib.svg';
-
-// 🔹 Вспомогательная: расчёт длительности
 const calculateDuration = (start, end) => {
   if (!start || !end) return '';
   const diffMs = new Date(end) - new Date(start);
@@ -16,8 +15,6 @@ const calculateDuration = (start, end) => {
   const minutes = Math.round((diffMs % (1000 * 60 * 60)) / (1000 * 60));
   return minutes === 0 ? `${hours} ч.` : `${hours} ч. ${minutes} мин.`;
 };
-
-// 🔹 Вспомогательная: склонение числительных
 const pluralize = (count, one, few, many) => {
   const mod10 = count % 10;
   const mod100 = count % 100;
@@ -26,20 +23,16 @@ const pluralize = (count, one, few, many) => {
   if (mod10 >= 2 && mod10 <= 4) return few;
   return many;
 };
-
 const EventDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  // 📦 Store
   const event = useSelectedEvent();
   const eventLoading = useEventLoading();
   const error = useEventError();
   const fetchEventById = useEventStore((state) => state.fetchEventById);
   const clearSelectedEvent = useEventStore((state) => state.clearSelectedEvent);
   const registerForEvent = useEventStore((state) => state.registerForEvent);
-
-  // 🎯 Local state
+  const isAuthenticated = useIsAuthenticated();
   const [registrationType, setRegistrationType] = useState('participant');
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [registrationError, setRegistrationError] = useState(null);
@@ -47,7 +40,7 @@ const EventDetail = () => {
   // 🔄 Синхронизация роли при загрузке данных из стора
   useEffect(() => {
     if (event?.isRegistered && event.userRegistration?.role) {
-      setRegistrationType(event.userRegistration.role === 'spectator' ? 'spectator' : 'participant');
+      setRegistrationType(event.userRegistration.role === 'fan' ? 'fan' : 'participant');
     }
   }, [event?.isRegistered, event?.userRegistration]);
 
@@ -83,23 +76,29 @@ const EventDetail = () => {
       const current = event.currentParticipants || 0;
       return Math.max(0, max - current);
     }
-    // Болельщики: условный лимит, если бэкенд не вернёт maxFans
+    // Болельщики: условный лимит
     return Math.max(0, 1000 - (event.currentFans || 0));
   };
 
   const availableParticipants = calculateAvailableSpots('participant');
   
-  // 🚫 Регистрация доступна только если пользователь ещё не зарегистрирован
+  //Регистрация доступна только если пользователь ещё не зарегистрирован
   const canRegisterAsParticipant = availableParticipants > 0 && !event?.isRegistered;
   const canRegisterAsSpectator = !event?.isRegistered;
 
-  // 🎁 Баллы зависят от выбранной роли
   const rewardPoints = registrationType === 'participant' 
     ? event?.participantPoints ?? 0 
     : event?.fanPoints ?? 0;
 
-  // 📤 Обработчик регистрации
+  // 📤 Обработчик регистрации с проверкой авторизации
   const handleRegister = async () => {
+    // 🔹 ПРОВЕРКА: Если не авторизован, перенаправляем на вход
+    if (!isAuthenticated) {
+      // Можно сохранить текущий URL, чтобы вернуться после логина
+      navigate('/login', { state: { from: `/event/${id}` } });
+      return;
+    }
+
     try {
       setRegistrationError(null);
       await registerForEvent(id, registrationType);
@@ -132,7 +131,7 @@ const EventDetail = () => {
     );
   }
 
-  // ✅ Основной рендер (сохранена ваша структура блоков)
+  // ✅ Основной рендер
   return (
     <div className='event-detail'>
       {/* Кнопка назад */}
@@ -162,7 +161,6 @@ const EventDetail = () => {
                   <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 6v2h14V6H5z"/>
                 </svg>
                 <div>
-                  {/* 🔧 Используем startDate вместо event.date */}
                   <div className="date">{formatDate(event.startDate)}</div>
                   <div className="time">{formatTime(event.startDate)} • {event.duration}</div>
                 </div>
@@ -180,7 +178,6 @@ const EventDetail = () => {
 
             <div className="event-full-description">
               <h3>Описание мероприятия</h3>
-              {/* 🔧 description вместо fullDescription */}
               <p>{event.description || 'Описание отсутствует'}</p>
             </div>
 
@@ -189,7 +186,6 @@ const EventDetail = () => {
               <div className="details-grid">
                 <div className="detail-item">
                   <span className="detail-label">Баллы за участие:</span>
-                  {/* 🔧 participantPoints/fanPoints вместо rewardsPoints */}
                   <span className="detail-value">{rewardPoints} баллов</span>
                 </div>
                 <div className="detail-item">
@@ -238,14 +234,13 @@ const EventDetail = () => {
             <div className="registration-card">
               <h3>Регистрация</h3>
               
-              {/* 🔧 Используем event.isRegistered вместо локального isRegistered */}
               {event?.isRegistered ? (
                 <div className="registration-success">
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="#28a745">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                   </svg>
                   <h4>Вы успешно зарегистрированы!</h4>
-                  <p>Роль: {event.userRegistration?.role === 'spectator' ? 'Болельщик' : 'Участник'}</p>
+                  <p>Роль: {event.userRegistration?.role === 'fan' ? 'Болельщик' : 'Участник'}</p>
                   <p className="reg-date">Дата регистрации: {formatDate(event.userRegistration?.registeredAt)}</p>
                 </div>
               ) : (
@@ -260,7 +255,6 @@ const EventDetail = () => {
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                         </svg>
-                        {/* 🔧 Исправлено: availableParticipants + pluralize */}
                         <span>
                           Участник {availableParticipants > 0 && 
                             `(${availableParticipants} ${pluralize(availableParticipants, 'место', 'места', 'мест')})`}
@@ -268,8 +262,8 @@ const EventDetail = () => {
                       </button>
                       
                       <button
-                        className={`type-btn ${registrationType === 'spectator' ? 'active' : ''}`}
-                        onClick={() => setRegistrationType('spectator')}
+                        className={`type-btn ${registrationType === 'fan' ? 'active' : ''}`}
+                        onClick={() => setRegistrationType('fan')}
                         disabled={!canRegisterAsSpectator}
                       >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -304,14 +298,14 @@ const EventDetail = () => {
                     </div>
                   </div>
 
-                  <button
-                    className="register-btn"
+                  {/* 🔹 Кнопка с проверкой авторизации */}
+                  <button 
                     onClick={handleRegister}
-                    disabled={!canRegisterAsParticipant && !canRegisterAsSpectator}
+                    className={`register-btn ${!isAuthenticated ? 'disabled-login' : ''}`}
+                    disabled={!isAuthenticated}
+                    title={!isAuthenticated ? 'Необходимо войти в систему для регистрации' : ''}
                   >
-                    {registrationType === 'participant' 
-                      ? (canRegisterAsParticipant ? 'Записаться как участник' : 'Мест нет')
-                      : 'Записаться как болельщик'}
+                    {isAuthenticated ? 'Записаться' : 'Войдите для записи'}
                   </button>
 
                   {registrationSuccess && (

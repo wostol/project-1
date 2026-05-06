@@ -7,6 +7,9 @@ import useEventStore, {
 } from '../Events/eventStore';
 import EventCard from '../component/EventCard/EventCard.js';
 import styles from './MyEvents.module.css';
+import { checkAuthAndRefresh } from '../auth/apiClient';
+import ConfirmDialog from '../component/ConfirmDialog.js';
+
 function MyEvents() {
   const fetchMyEvents = useEventStore((state) => state.fetchMyEvents);
   const fetchEventDetails = useEventStore((state) => state.fetchEventDetailsOnly);
@@ -15,24 +18,53 @@ function MyEvents() {
   const loading = useEventLoading();
   const error = useEventError();
   const unsubscribeFromEvent = useEventStore((state) => state.unsubscribeFromEvent);
-
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState(null);
+  const [isUnsubscribing, setIsUnsubscribing] = useState(false);
   useEffect(() => {
-    fetchMyEvents();
+    const loadMyEvents = async () => {
+      try {
+        // 🔥 ПРОВЕРКА: Если токена нет, делаем рефреш ПЕРЕД запросом данных
+        await checkAuthAndRefresh();
+        // Теперь делаем запрос к данным, токен должен быть в куках
+        await fetchMyEvents();
+      } catch (err) {
+        console.error('Failed to load my events:', err);
+        // Ошибка уже обработана в checkAuthAndRefresh (вызван logout)
+      }
+    };
+
+    loadMyEvents();
   }, [fetchMyEvents]);
 
   const registeredEvents = events.filter(event => event.isRegistered === true);
 
-  const handleUnsubscribe = useCallback(async (eventId) => {
-    if (!window.confirm('Вы уверены, что хотите отписаться от мероприятия?')) return;
+const handleUnsubscribeRequest = useCallback((eventId) => {
+    setSelectedEventId(eventId);
+    setShowConfirmDialog(true);
+  }, []);
+
+  const handleConfirmUnsubscribe = useCallback(async () => {
+    if (!selectedEventId) return;
+
+    setIsUnsubscribing(true);
     try {
-      await unsubscribeFromEvent(eventId);
-      alert('Вы отписались от мероприятия');
-      fetchMyEvents(); // перезагружаем список после отписки
+      await unsubscribeFromEvent(selectedEventId);
+      setShowConfirmDialog(false);
+      setSelectedEventId(null);
+      fetchMyEvents();
     } catch (err) {
       console.error('Ошибка при отписке:', err);
       alert('Не удалось отписаться. Попробуйте позже.');
+    } finally {
+      setIsUnsubscribing(false);
     }
-  }, [fetchMyEvents, unsubscribeFromEvent]);
+  }, [selectedEventId, fetchMyEvents, unsubscribeFromEvent]);
+
+  const handleCancelUnsubscribe = useCallback(() => {
+    setShowConfirmDialog(false);
+    setSelectedEventId(null);
+  }, []);
 
 
   if (loading && events.length === 0) {
@@ -82,12 +114,12 @@ function MyEvents() {
               <h3>Нет мероприятий</h3>
               <p>Зарегистрируйтесь на мероприятие, чтобы оно появилось здесь</p>
             </div>
-          ) : (
+            ) : (
             registeredEvents.map(event => (
               <EventCard
                 key={event.id}
                 event={event}
-                onUnsubscribe={handleUnsubscribe}
+                onUnsubscribe={handleUnsubscribeRequest}
                 fetchEventDetails={fetchEventDetails}
                 updateEvent={updateEvent}
               />
@@ -95,6 +127,17 @@ function MyEvents() {
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={showConfirmDialog}
+        title="Отписка от мероприятия"
+        message="Вы уверены, что хотите отписаться от мероприятия?"
+        onConfirm={handleConfirmUnsubscribe}
+        onCancel={handleCancelUnsubscribe}
+        confirmText="Отписаться"
+        cancelText="Отмена"
+        isLoading={isUnsubscribing}
+      />
     </div>
   );
 }

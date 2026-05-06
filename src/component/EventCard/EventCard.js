@@ -65,7 +65,7 @@ const getRoleIcon = (role) => {
 const getRoleLabel = (role) => {
   const roles = {
     participant: 'Участник',
-    spectator: 'Болельщик',
+    fan: 'Болельщик',
     organizer: 'Организатор',
   };
   return roles[role] || role;
@@ -78,7 +78,7 @@ const EventCard = ({ event, onUnsubscribe, fetchEventDetails, updateEvent }) => 
 
   const statusConfig = getStatusConfig(event.status);
   const userRole = event.myRole || 'participant';
-  const points = userRole === 'spectator' ? event.fanPoints : event.participantPoints;
+  const points = userRole === 'fan' ? event.fanPoints : event.participantPoints;
 
   const progressPercent = event.currentParticipants && event.maxParticipants
     ? Math.round((event.currentParticipants / event.maxParticipants) * 100)
