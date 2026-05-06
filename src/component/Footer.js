@@ -64,17 +64,14 @@ const Footer = () => {
             <h3 className="footer-nav-title">О нас</h3>
             <ul className="footer-nav-list">
               <li>
-                <a href="/events/ski-marathon" className="footer-nav-link">
-                  Как это работает
-                </a>
+                <span className="footer-nav-link">Как это работает</span>
               </li>
               <li>
-                <a href="/events/basketball" className="footer-nav-link">
-                  Команда
-                </a>
+                <span className="footer-nav-link">Команда</span>
               </li>
             </ul>
           </div>
+
           <div className="footer-nav footer-nav-center">
           </div>
           {/* Личный кабинет */}
@@ -100,20 +97,16 @@ const Footer = () => {
           </div>
 
           {/* Контакты */}
-          <div className="footer-nav">
+       <div className="footer-nav">
             <h3 className="footer-nav-title">КОНТАКТЫ</h3>
             <ul className="footer-nav-list">
               <li className="contact-item">
                 <span className="contact-label-footer">Руководитель</span>
-                <a href="tel:+7xxxxxx-xx-xx" className="contact-link-footer">
-                  +7 (xxxx) xx-xx-xx
-                </a>
+                <span className="contact-link-footer">+7 (xxxx) xx-xx-xx</span>
               </li>
               <li className="contact-item">
                 <span className="contact-label-footer">Пресс-служба</span>
-                <a href="tel:+7xxxxxx-xx-xx" className="contact-link-footer">
-                  +7 (xxxx) xx-xx-xx
-                </a>
+                <span className="contact-link-footer">+7 (xxxx) xx-xx-xx</span>
               </li>
             </ul>
           </div>

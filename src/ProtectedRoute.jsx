@@ -16,7 +16,6 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    // Сохраняем адрес, куда хотел попасть пользователь
     sessionStorage.setItem('returnUrl', location.pathname);
     return <Navigate to="/" state={{ from: location }} replace />;
   }

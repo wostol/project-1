@@ -68,6 +68,9 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
+    white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   flex-wrap: wrap;
   position: relative;
   z-index: 1;
@@ -80,9 +83,14 @@
   color: #003465;
   line-height: 1.3;
   flex: 1;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   min-width: 250px;
   margin: 0;
   transition: color 0.8s ease;
+  max-width: 100%; 
+  word-break: break-word; 
 }
 
 .eventMetaTop {
@@ -236,10 +244,21 @@
   .eventCard { padding: 25px; }
   .cardCornerDecoration { width: 60px; height: 60px; }
   .eventCard:hover .cardCornerDecoration { width: 100%; height: 100%; }
-  .cardHeader { flex-direction: column; align-items: flex-start; }
-  .eventMetaTop { align-items: flex-start; width: 100%; }
-  .eventMetaRow { align-items: flex-start; }
-  .eventTitle { font-size: 24px; min-width: auto; }
+  .cardHeader { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    width: 100%; 
+  }
+  .eventMetaTop { 
+    align-items: flex-start; 
+    width: 100%; 
+  }
+  .eventTitle { 
+    font-size: 24px; 
+    min-width: auto; 
+    max-width: 100%; 
+    width: 100%; 
+  }
   .metaItem { font-size: 14px; }
   .metaItem .icon { width: 20px; height: 20px; }
 }
