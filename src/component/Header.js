@@ -388,14 +388,16 @@ const Header = () => {
                     </svg>
                   </span>
                   <span className='btn-text'>Корзина</span>
-                  <span
-                    className='btn-badge cart-badge'
-                    style={{
-                      display: cartItemsCount > 0 ? 'flex' : 'none'
-                    }}
-                  >
-                    {cartItemsCount > 99 ? '99+' : cartItemsCount}
-                  </span>
+                  {isAuthenticated && (
+                    <span
+                      className='btn-badge cart-badge'
+                      style={{
+                        display: cartItemsCount > 0 ? 'flex' : 'none'
+                      }}
+                    >
+                      {cartItemsCount > 99 ? '99+' : cartItemsCount}
+                    </span>
+                  )}
                 </button>
               </Link>
 

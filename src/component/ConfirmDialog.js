@@ -8,7 +8,8 @@ const ConfirmDialog = ({
   onCancel,
   confirmText = 'Подтвердить',
   cancelText = 'Отмена',
-  isLoading = false
+  isLoading = false,
+  showCancel = true // Новый проп для управления отображением кнопки отмены
 }) => {
   if (!isOpen) return null;
 
@@ -18,13 +19,15 @@ const ConfirmDialog = ({
         <h3 className={styles.title}>{title}</h3>
         <p className={styles.message}>{message}</p>
         <div className={styles.actions}>
-          <button
-            className={`${styles.btn} ${styles.btnCancel}`}
-            onClick={onCancel}
-            disabled={isLoading}
-          >
-            {cancelText}
-          </button>
+          {showCancel && (
+            <button
+              className={`${styles.btn} ${styles.btnCancel}`}
+              onClick={onCancel}
+              disabled={isLoading}
+            >
+              {cancelText}
+            </button>
+          )}
           <button
             className={`${styles.btn} ${styles.btnConfirm}`}
             onClick={onConfirm}

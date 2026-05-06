@@ -15,7 +15,7 @@ const onTokenRefreshed = () => {
 // Добавляем запрос в очередь
 const subscribeToTokenRefresh = (cb) => subscribers.push(cb);
 
-// 🔥 ИЗМЕНЕННАЯ ФУНКЦИЯ LOGOUT
+
 // Вызываем централизованный logout из authService, который:
 // 1. Очищает localStorage/sessionStorage
 // 2. Делает запрос на сервер для удаления куки

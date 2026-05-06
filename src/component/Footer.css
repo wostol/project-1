@@ -73,6 +73,7 @@
   flex-direction: column;
   gap: 20px;
   min-width: 150px;
+  max-width: 100%;
   text-align: center;
   padding: 0 10px;
   box-sizing: border-box;
@@ -105,11 +106,13 @@
   flex-direction: column;
   gap: 12px;
   align-items: center;
+  width: 100%;
 }
 
 .footer-nav-list li {
   margin: 0;
   padding: 0;
+  width: 100%;
 }
 
 .footer-nav-link {
@@ -122,7 +125,10 @@
   text-decoration: none;
   transition: all 0.3s ease;
   position: relative;
-  white-space: nowrap;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 .footer-nav-link:hover {
@@ -366,13 +372,12 @@
   }
 
   .footer-nav-center {
-    display: none; /* Скрываем центральную пустую колонку */
+    display: none; 
   }
 
   .footer-nav {
     text-align: center;
     align-items: center;
-    min-width: auto;
     width: 100%;
     padding: 0;
   }

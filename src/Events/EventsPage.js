@@ -1,12 +1,14 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import EventCard from './EventCard';
 import useEventStore, { useEvents, useEventLoading, useEventError } from './eventStore';
+import ConfirmDialog from '../component/ConfirmDialog';
 import './EventsPage.css';
 
 const EventsPage = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const searchInputRef = useRef(null);
 
   const events = useEvents();
@@ -14,9 +16,19 @@ const EventsPage = () => {
   const error = useEventError();
   const fetchEvents = useEventStore((state) => state.fetchEvents);
 
+  // Проверяем, был ли редирект с защищенной страницы
   useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
+    const returnUrl = sessionStorage.getItem('returnUrl');
+    console.log(returnUrl)
+    if (returnUrl && returnUrl != '/') {
+      sessionStorage.removeItem('returnUrl');
+      setShowAuthDialog(true);
+    }
+  }, []);
+
+  const handleCloseDialog = () => {
+    setShowAuthDialog(false);
+  };
 
   const toggleSearch = () => {
     setIsSearchOpen(prev => !prev);
@@ -47,9 +59,19 @@ const EventsPage = () => {
 
   return (
     <div className="events-page">
+      <ConfirmDialog
+        isOpen={showAuthDialog}
+        title="Требуется авторизация"
+        message="Для просмотра выбранной страницы необходимо сначала авторизоваться"
+        onConfirm={handleCloseDialog}
+        onCancel={handleCloseDialog}
+        confirmText="OK"
+        showCancel={false}
+      />
+
       <div className="events-header">
         <h1 className="events-title">Мероприятия</h1>
-        
+
         {/* Анимированный поиск */}
         <div className={`events-search-container ${isSearchOpen ? 'open' : ''}`}>
           <input
@@ -118,9 +140,9 @@ const EventsPage = () => {
               </svg>
               <h3>Мероприятий не найдено</h3>
               <p>
-                {searchQuery 
+                {searchQuery
                   ? 'Попробуйте изменить поисковый запрос'
-                  : activeTab === 'upcoming' 
+                  : activeTab === 'upcoming'
                     ? 'Новые мероприятия появятся здесь скоро'
                     : 'Здесь будут отображаться прошедшие мероприятия'}
               </p>
