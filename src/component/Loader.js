@@ -1,11 +1,19 @@
 import React from 'react';
-import './Loader.css'; // создадим отдельный CSS файл
+import './Loader.css';
 
-const Loader = () => {
+const Loader = ({ message = 'Загрузка...', progress }) => {
   return (
     <div className="loader-container">
       <div className="spinner"></div>
-      <p>Загрузка...</p>
+      <p>{message}</p>
+      {progress !== undefined && (
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+          ></div>
+        </div>
+      )}
     </div>
   );
 };
