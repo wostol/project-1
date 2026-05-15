@@ -68,13 +68,27 @@ const useAuthStore = create(
         }
       },
 
-      checkAuth: () => {
-        // Важно: checkAuth теперь должен полагаться на актуальность куки,
-        // но так как мы не декодируем токен, мы просто проверяем наличие объекта в сторе.
-        // Реальная проверка произойдет при первом запросе к API.
+      // 🔥 Proactive проверка при загрузке страницы (только один раз при старте)
+      checkAuth: async () => {
         const storedUser = get().user;
         const storedAuth = get().isAuthenticated;
-        
+
+        // 🔥 Если пользователь был авторизован (данные в сторе есть),
+        // проверяем актуальность токена и делаем рефреш при необходимости
+        if (storedAuth && storedUser) {
+          try {
+            // Импортируем checkAuthAndRefresh динамически чтобы избежать циклических зависимостей
+            const { checkAuthAndRefresh } = await import('./apiClient.js');
+            console.log('[authStore] Running proactive auth check on page load...');
+            await checkAuthAndRefresh();
+            console.log('[authStore] Auth check completed successfully');
+          } catch (err) {
+            // Ошибка уже обработана в apiClient (вызван logout)
+            console.log('[authStore] Auth check failed, user logged out');
+            return;
+          }
+        }
+
         set({
           isAuthenticated: storedAuth,
           user: storedAuth ? storedUser : null,
@@ -91,7 +105,7 @@ const useAuthStore = create(
         authService.setUser(updatedUser);
         set({ user: updatedUser });
       },
-      
+
       // Новый метод для принудительной очистки без вызова authService.logout (если нужно)
       forceLogout: () => {
          set({
@@ -117,17 +131,17 @@ if (typeof window !== 'undefined') {
   window.addEventListener('auth-logout', () => {
     console.log('[AuthStore] Received auth-logout event');
     const store = useAuthStore.getState();
-    
+
     // 1. Сбрасываем состояние в памяти
     store.forceLogout();
-    
+
     // 2. Явно удаляем ключ из localStorage, чтобы при перезагрузке не восстановилось старое
     // Zustand persist иногда может не успеть синхронизироваться, если событие пришло извне
     localStorage.removeItem('auth-storage');
-    
+
     // 3. Опционально: перезагружаем страницу, чтобы сбросить все компоненты в начальное состояние
     // Это самый надежный способ убедиться, что UI обновился
-    window.location.reload(); 
+    window.location.reload();
   });
 }
 

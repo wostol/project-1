@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useImageLoading } from '../hooks/useLoading';
 import styles from './ShopPage.module.css';
 import Shirt from '../image/shirt.png';
 import cap from '../image/cap.png';
@@ -75,6 +76,10 @@ const ShopPage = () => {
     }
   ];
 
+  // Извлекаем все URL изображений из продуктов
+  const imageSources = mockProducts.map(p => p.image);
+  const { loaded: imagesLoaded } = useImageLoading(imageSources);
+
   useEffect(() => {
     setTimeout(() => {
       setProducts(mockProducts);
@@ -125,7 +130,7 @@ const ShopPage = () => {
     addNotification('Товар добавлен!', `${product.name} успешно добавлен в корзину`);
   };
 
-  if (loading) {
+  if (loading || !imagesLoaded) {
     return (
       <div className={`${styles.shopPage} ${styles.loading}`}>
         <div className={styles.spinner}></div>

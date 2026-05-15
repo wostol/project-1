@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useImageLoading } from '../hooks/useLoading'
 import './ProfilePage.css'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import cap from '../image/cap.png'
@@ -198,8 +199,23 @@ function ProfilePage () {
           }
         ]
 
+  // Извлекаем все URL изображений из заказов для предзагрузки
+  const orderImageSources = displayOrders.map(o => o.image)
+  const { loaded: orderImagesLoaded } = useImageLoading([...orderImageSources, logo])
+
   const currentLevel = getCurrentLevel()
   const totalPoints = user?.total_points || userLevel?.points || 125
+
+  if (loading || !orderImagesLoaded) {
+    return (
+      <div className='profile-page'>
+        <div className='loading-container'>
+          <div className='spinner'></div>
+          <p>Загрузка профиля...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className='profile-page'>

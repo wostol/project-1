@@ -5,7 +5,8 @@ import useEventStore, {
   useEventLoading,
   useEventError
 } from './eventStore';
-import { useIsAuthenticated } from '../auth/authStore'; 
+import { useIsAuthenticated } from '../auth/authStore';
+import { useImageLoading } from '../hooks/useLoading';
 import './EventDetail.css';
 import logo from '../image/lionsib.svg';
 const calculateDuration = (start, end) => {
@@ -36,13 +37,29 @@ const EventDetail = () => {
   const [registrationType, setRegistrationType] = useState('participant');
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [registrationError, setRegistrationError] = useState(null);
+    const [isCheckingRegistration, setIsCheckingRegistration] = useState(true);
+
+  // Предзагрузка логотипа
+  const { loaded: logoLoaded } = useImageLoading([logo]);
 
   // 🔄 Синхронизация роли при загрузке данных из стора
-  useEffect(() => {
-    if (event?.isRegistered && event.userRegistration?.role) {
-      setRegistrationType(event.userRegistration.role === 'fan' ? 'fan' : 'participant');
+ useEffect(() => {
+    console.log('[EventDetail] useEffect check:', {
+      eventExists: !!event,
+      loading: eventLoading,
+      isRegistered: event?.isRegistered,
+      hasRole: !!event?.userRegistration?.role
+    });
+
+    // 🔹 ИСПРАВЛЕНИЕ: Завершаем проверку ТОЛЬКО когда событие загружено И статус регистрации определен (true/false)
+    if (event && !eventLoading && event.isRegistered !== undefined && event.isRegistered !== null) {
+      console.log('[EventDetail] Registration status loaded:', event.isRegistered);
+      if (event.isRegistered && event.userRegistration?.role) {
+        setRegistrationType(event.userRegistration.role === 'fan' ? 'fan' : 'participant');
+      }
+      setIsCheckingRegistration(false);
     }
-  }, [event?.isRegistered, event?.userRegistration]);
+  }, [event?.isRegistered, event?.userRegistration, event, eventLoading]);
 
   // 📥 Загрузка события
   useEffect(() => {
@@ -64,11 +81,11 @@ const EventDetail = () => {
   };
 
   // 🧮 Вычисляемые значения
-  const duration = useMemo(() => 
-    calculateDuration(event?.startDate, event?.endDate), 
+  const duration = useMemo(() =>
+    calculateDuration(event?.startDate, event?.endDate),
     [event?.startDate, event?.endDate]
   );
-  
+
   const calculateAvailableSpots = (type) => {
     if (!event) return 0;
     if (type === 'participant') {
@@ -81,13 +98,13 @@ const EventDetail = () => {
   };
 
   const availableParticipants = calculateAvailableSpots('participant');
-  
+
   //Регистрация доступна только если пользователь ещё не зарегистрирован
   const canRegisterAsParticipant = availableParticipants > 0 && !event?.isRegistered;
   const canRegisterAsSpectator = !event?.isRegistered;
 
-  const rewardPoints = registrationType === 'participant' 
-    ? event?.participantPoints ?? 0 
+  const rewardPoints = registrationType === 'participant'
+    ? event?.participantPoints ?? 0
     : event?.fanPoints ?? 0;
 
   // 📤 Обработчик регистрации с проверкой авторизации
@@ -143,7 +160,7 @@ const EventDetail = () => {
       </button>
 
       <div className="event-detail-container">
-        
+
         <div className='event-detail-header'>
           <h1 className='event-detail-title'>{event.title}</h1>
           <div className='event-header-logo'>
@@ -165,7 +182,7 @@ const EventDetail = () => {
                   <div className="time">{formatTime(event.startDate)} • {event.duration}</div>
                 </div>
               </div>
-              
+
               <div className="location">
                 <svg className="icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
@@ -233,8 +250,12 @@ const EventDetail = () => {
           <div className="event-registration">
             <div className="registration-card">
               <h3>Регистрация</h3>
-              
-              {event?.isRegistered ? (
+
+                {(isCheckingRegistration) ? (
+                <div className="registration-success">
+                  <p>Проверка статуса регистрации...</p>
+                </div>
+              ) : event?.isRegistered ? (
                 <div className="registration-success">
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="#28a745">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
@@ -256,11 +277,11 @@ const EventDetail = () => {
                           <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                         </svg>
                         <span>
-                          Участник {availableParticipants > 0 && 
+                          Участник {availableParticipants > 0 &&
                             `(${availableParticipants} ${pluralize(availableParticipants, 'место', 'места', 'мест')})`}
                         </span>
                       </button>
-                      
+
                       <button
                         className={`type-btn ${registrationType === 'fan' ? 'active' : ''}`}
                         onClick={() => setRegistrationType('fan')}
@@ -272,7 +293,7 @@ const EventDetail = () => {
                         <span>Болельщик</span>
                       </button>
                     </div>
-                    
+
                     <div className="type-info">
                       {registrationType === 'participant' ? (
                         <>
@@ -299,7 +320,7 @@ const EventDetail = () => {
                   </div>
 
                   {/* 🔹 Кнопка с проверкой авторизации */}
-                  <button 
+                  <button
                     onClick={handleRegister}
                     className={`register-btn ${!isAuthenticated ? 'disabled-login' : ''}`}
                     disabled={!isAuthenticated}

@@ -1,6 +1,4 @@
 import { create } from 'zustand';
-// ❌ Убираем импорт Servisedetail.js, если он больше нигде не используется
-// import { fetchEventDetails, fetchFullEvent } from './Servisedetail.js';
 import authService from '../authService';
 import { apiRequest } from '../auth/apiClient';
 
@@ -170,6 +168,8 @@ const useEventStore = create((set, get) => ({
         : state.selectedEvent,
     }));
   },
+
+  // 🔥 Регистрация с реактивным обновлением токена при 401
   registerForEvent: async (eventId, registrationType) => {
     set({ loading: true, error: null });
     try {
@@ -189,6 +189,7 @@ const useEventStore = create((set, get) => ({
       throw error;
     }
   },
+
   unsubscribeFromEvent: async (eventId) => {
     set({ loading: true, error: null });
     try {
