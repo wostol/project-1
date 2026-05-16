@@ -17,6 +17,7 @@ function ProfilePage () {
   const [userAchievements, setUserAchievements] = useState(null)
   const [orders, setOrders] = useState([])
   const [allLevels, setAllLevels] = useState([]) // ← НОВОЕ: все уровни из БД
+  const [levelsLoading, setLevelsLoading] = useState(true) // ← Загрузка уровней
 
   const { user, loading, updateUser, logout } = useAuth()
   const navigate = useNavigate()
@@ -67,6 +68,8 @@ function ProfilePage () {
             color: '#FF6B6B'
           }
         ])
+      } finally {
+        setLevelsLoading(false) // ← Завершаем загрузку уровней
       }
     }
 
@@ -206,7 +209,8 @@ function ProfilePage () {
   const currentLevel = getCurrentLevel()
   const totalPoints = user?.total_points || userLevel?.points || 125
 
-  if (loading || !orderImagesLoaded) {
+  // 🔥 Ждём завершения загрузки: auth + уровни + изображения
+  if (loading || levelsLoading || !orderImagesLoaded) {
     return (
       <div className='profile-page'>
         <div className='loading-container'>

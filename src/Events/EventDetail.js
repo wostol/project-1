@@ -37,10 +37,13 @@ const EventDetail = () => {
   const [registrationType, setRegistrationType] = useState('participant');
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [registrationError, setRegistrationError] = useState(null);
-    const [isCheckingRegistration, setIsCheckingRegistration] = useState(true);
+  const [isCheckingRegistration, setIsCheckingRegistration] = useState(true);
 
   // Предзагрузка логотипа
   const { loaded: logoLoaded } = useImageLoading([logo]);
+
+  // 🔥 Отслеживаем завершение загрузки данных события (не только загрузку из стора)
+  const [dataReady, setDataReady] = useState(false);
 
   // 🔄 Синхронизация роли при загрузке данных из стора
  useEffect(() => {
@@ -58,6 +61,7 @@ const EventDetail = () => {
         setRegistrationType(event.userRegistration.role === 'fan' ? 'fan' : 'participant');
       }
       setIsCheckingRegistration(false);
+      setDataReady(true); // ← Данные готовы
     }
   }, [event?.isRegistered, event?.userRegistration, event, eventLoading]);
 

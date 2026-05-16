@@ -128,8 +128,6 @@ const useAuthStore = create(
         authService.setUser(updatedUser);
         set({ user: updatedUser });
       },
-
-      // Новый метод для принудительной очистки без вызова authService.logout (если нужно)
       forceLogout: () => {
          set({
             isAuthenticated: false,

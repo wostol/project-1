@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-// 🔹 Импортируем только экспортированные хуки — они возвращают уже нормализованные данные
-import useEventStore, { useEvents, useEventLoading } from '../Events/eventStore';
+import { apiRequest } from '../auth/apiClient';
 import './Footer.css';
 import logo from './lion.png';
 import VK from './VK.png';
@@ -9,25 +8,41 @@ import VK from './VK.png';
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
-  // 🔹 Получаем НОРМАЛИЗОВАННЫЕ мероприятия и статус загрузки через экспортированные хуки
-  const events = useEvents();           // ← state.events (уже после normalizeEvent)
-  const loading = useEventLoading();    // ← state.loading
-  const fetchEvents = useEventStore((state) => state.fetchEvents);
+  // Локальное состояние для последних мероприятий (не зависит от основного store)
+  const [recentEvents, setRecentEvents] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // 🔹 Загружаем список, если он ещё пуст (хуки гарантируют реактивность)
+  // Загружаем 3 последних мероприятия независимо от основного store
   useEffect(() => {
-    if (events.length === 0 && !loading) {
-      fetchEvents(); // ← после выполнения events в сторе будут уже нормализованы
-    }
-  }, [events.length, loading, fetchEvents]);
+    const fetchRecentEvents = async () => {
+      if (recentEvents.length > 0 || loading) return;
 
-  // 🔹 Берём 3 последних мероприятия (сортировка по startDate ↓)
-  const recentEvents = useMemo(() => {
-    if (!events?.length) return [];
-    return [...events]
-      .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
-      .slice(0, 3);
-  }, [events]);
+      setLoading(true);
+      try {
+        const data = await apiRequest('/events', {
+          method: 'GET',
+        });
+        const normalized = Array.isArray(data) ? data.map(event => ({
+          id: event.uuid,
+          title: event.title,
+          startDate: event.startDate,
+        })) : [];
+
+        // Сортируем по дате начала (убывание) и берём первые 3
+        const sorted = normalized
+          .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
+          .slice(0, 3);
+
+        setRecentEvents(sorted);
+      } catch (error) {
+        console.error('Failed to fetch recent events:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecentEvents();
+  }, [recentEvents.length, loading]);
 
   return (
     <footer className="footer">
@@ -42,13 +57,13 @@ const Footer = () => {
           <div className="footer-nav">
             <h3 className="footer-nav-title">МЕРОПРИЯТИЯ</h3>
             <ul className="footer-nav-list">
-              {loading && events.length === 0 ? (
+              {loading && recentEvents.length === 0 ? (
                 <li className="footer-nav-link">Загрузка...</li>
               ) : recentEvents.length > 0 ? (
                 recentEvents.map(event => (
                   <li key={event.id}>
-                    <Link 
-                      to={`/event/${event.id}`} 
+                    <Link
+                      to={`/event/${event.id}`}
                       className="footer-nav-link"
                     >
                       {event.title}
