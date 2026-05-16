@@ -80,18 +80,41 @@ const useAuthStore = create(
             // Импортируем checkAuthAndRefresh динамически чтобы избежать циклических зависимостей
             const { checkAuthAndRefresh } = await import('./apiClient.js');
             console.log('[authStore] Running proactive auth check on page load...');
-            await checkAuthAndRefresh();
-            console.log('[authStore] Auth check completed successfully');
+
+            // Сценарий А или Б: checkAuthAndRefresh вернёт true
+            // Сценарий В: выбросит ошибку (logout уже вызван внутри apiClient)
+            const isValid = await checkAuthAndRefresh();
+
+            if (isValid) {
+              console.log('[authStore] Auth check completed successfully');
+              // Получаем обновлённые данные пользователя из authService
+              const updatedUser = authService.getUser();
+              set({
+                isAuthenticated: true,
+                user: updatedUser || storedUser,
+                loading: false,
+                error: null,
+              });
+              return;
+            }
           } catch (err) {
-            // Ошибка уже обработана в apiClient (вызван logout)
+            // Сценарий В: Ошибка уже обработана в apiClient (вызван logout)
+            // Zustand state уже очищен через store.logout()
             console.log('[authStore] Auth check failed, user logged out');
+            set({
+              isAuthenticated: false,
+              user: null,
+              loading: false,
+              error: null,
+            });
             return;
           }
         }
 
+        // Если не было сохранённых данных авторизации
         set({
-          isAuthenticated: storedAuth,
-          user: storedAuth ? storedUser : null,
+          isAuthenticated: false,
+          user: null,
           loading: false,
           error: null,
         });
