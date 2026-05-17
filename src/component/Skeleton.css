@@ -1,0 +1,396 @@
+/* ========================================
+   Skeleton Loading Styles
+   Предотвращают скачки контента при загрузке
+   ======================================== */
+
+/* Анимация мерцания */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* Базовый стиль для всех скелетон-элементов */
+[class^="skeleton-"],
+[class*=" skeleton-"] {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0%,
+    #e8e8e8 20%,
+    #f0f0f0 40%,
+    #f0f0f0 100%
+  );
+  background-size: 200px 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ===== Скелетон карточки мероприятия ===== */
+.skeleton-event-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 52, 102, 0.08);
+  height: 380px; /* Фиксированная высота как у реальной карточки */
+}
+
+.skeleton-image {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(
+    90deg,
+    #d0d0d0 0%,
+    #c8c8c8 20%,
+    #d0d0d0 40%,
+    #d0d0d0 100%
+  );
+  background-size: 200px 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-content {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-title {
+  width: 85%;
+  height: 24px;
+  border-radius: 6px;
+}
+
+.skeleton-date {
+  width: 60%;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.skeleton-description {
+  width: 100%;
+  height: 40px;
+  border-radius: 6px;
+}
+
+.skeleton-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.skeleton-button {
+  width: 120px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+/* ===== Сетка скелетонов для списка мероприятий ===== */
+.skeleton-events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+/* ===== Скелетон профиля ===== */
+.skeleton-profile {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.skeleton-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.skeleton-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-profile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeleton-name {
+  width: 200px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+.skeleton-email {
+  width: 280px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.skeleton-profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.skeleton-stat-item {
+  height: 100px;
+  border-radius: 12px;
+}
+
+.skeleton-profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-list-item {
+  width: 100%;
+  height: 60px;
+  border-radius: 8px;
+}
+
+/* ===== Скелетон корзины ===== */
+.skeleton-cart {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.skeleton-cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeleton-cart-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.skeleton-cart-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.skeleton-cart-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.skeleton-cart-title {
+  width: 70%;
+  height: 20px;
+  border-radius: 6px;
+}
+
+.skeleton-cart-price {
+  width: 40%;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.skeleton-cart-summary {
+  padding: 20px;
+  border-radius: 12px;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: fit-content;
+}
+
+.skeleton-summary-line {
+  width: 100%;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.skeleton-summary-total {
+  width: 100%;
+  height: 24px;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+.skeleton-checkout-button {
+  width: 100%;
+  height: 48px;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+/* ===== Скелетон деталей мероприятия ===== */
+.skeleton-event-detail {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.skeleton-detail-image {
+  width: 100%;
+  height: 400px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.skeleton-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeleton-detail-title {
+  width: 80%;
+  height: 36px;
+  border-radius: 8px;
+}
+
+.skeleton-detail-date {
+  width: 50%;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.skeleton-detail-description {
+  width: 100%;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.skeleton-detail-description-line {
+  width: 100%;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.skeleton-register-button {
+  width: 200px;
+  height: 48px;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+/* ===== Скелетон магазина ===== */
+.skeleton-shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.skeleton-shop-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.skeleton-shop-image {
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+}
+
+.skeleton-shop-title {
+  width: 90%;
+  height: 20px;
+  border-radius: 6px;
+}
+
+.skeleton-shop-price {
+  width: 50%;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.skeleton-shop-button {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  margin-top: auto;
+}
+
+/* ===== Контейнер страницы ===== */
+.skeleton-page-container {
+  min-height: 60vh;
+  width: 100%;
+  padding: 20px;
+}
+
+/* ===== Адаптивность ===== */
+@media (max-width: 768px) {
+  .skeleton-cart {
+    grid-template-columns: 1fr;
+  }
+
+  .skeleton-cart-summary {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+  }
+
+  .skeleton-profile-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .skeleton-stat-item {
+    height: 80px;
+  }
+
+  .skeleton-events-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .skeleton-shop-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .skeleton-shop-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .skeleton-profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .skeleton-profile-info {
+    align-items: center;
+  }
+}
