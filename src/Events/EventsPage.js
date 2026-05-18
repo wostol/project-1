@@ -3,6 +3,7 @@ import EventCard from './EventCard';
 import useEventStore, { useEvents, useEventLoading, useEventError } from './eventStore';
 import ConfirmDialog from '../component/ConfirmDialog';
 import './EventsPage.css';
+import { EventsListSkeleton } from '../component/Skeleton';
 
 const EventsPage = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
@@ -60,7 +61,7 @@ const EventsPage = () => {
 
   return (
     <div className="events-page">
-      <ConfirmDialog
+      {/* <ConfirmDialog
         isOpen={showAuthDialog}
         title="Требуется авторизация"
         message="Для просмотра выбранной страницы необходимо сначала авторизоваться"
@@ -68,7 +69,7 @@ const EventsPage = () => {
         onCancel={handleCloseDialog}
         confirmText="OK"
         showCancel={false}
-      />
+      /> */}
 
       <div className="events-header">
         <h1 className="events-title">Мероприятия</h1>
@@ -113,10 +114,7 @@ const EventsPage = () => {
       </div>
 
       {isLoading ? (
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Загрузка мероприятий...</p>
-        </div>
+        <EventsListSkeleton count={6} />
       ) : error ? (
         <div className="error-container">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="#dc3545">

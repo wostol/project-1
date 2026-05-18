@@ -2,13 +2,14 @@
 import { useEffect, useRef } from 'react';
 import useAuthStore from './auth/authStore';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ProfileSkeleton } from './component/Skeleton';
 
 
 const AuthInitializer = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { checkAuth, handleAuthCallback, loading } = useAuthStore();
-  const processedRef = useRef(false); 
+  const processedRef = useRef(false);
 
   useEffect(() => {
     checkAuth();
@@ -18,14 +19,14 @@ const AuthInitializer = ({ children }) => {
     const processCallback = async () => {
       const searchParams = location.search;
       console.log('🔍 Параметры URL:', searchParams);
-      
+
       // Проверяем наличие кода и что ещё не обрабатывали
       if (searchParams && searchParams.includes('code=') && !processedRef.current) {
         processedRef.current = true; // ← помечаем как обработанный
         console.log('✅ Найден код авторизации, обрабатываю...');
-        
+
         const success = await handleAuthCallback(searchParams);
-        
+
         if (success) {
           // Очищаем URL от параметров
           window.history.replaceState({}, document.title, location.pathname);
@@ -46,12 +47,7 @@ const AuthInitializer = ({ children }) => {
   }, [location, handleAuthCallback, navigate, loading]);
 
   if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p>Загрузка...</p>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   return children;

@@ -7,6 +7,7 @@ import useEventStore, {
 } from './eventStore';
 import { useIsAuthenticated } from '../auth/authStore';
 import { useImageLoading } from '../hooks/useLoading';
+import { EventDetailSkeleton } from '../component/Skeleton';
 import './EventDetail.css';
 import logo from '../image/lionsib.svg';
 const calculateDuration = (start, end) => {
@@ -132,12 +133,7 @@ const EventDetail = () => {
 
   // ⏳ Loading
   if (eventLoading) {
-    return (
-      <div className="loading-container">
-        <button onClick={() => navigate('/')} className="back-btn">← Назад</button>
-        <p>Загрузка мероприятия...</p>
-      </div>
-    );
+    return <EventDetailSkeleton />;
   }
 
   // ❌ Error / Not Found

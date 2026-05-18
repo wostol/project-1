@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './CartPage.module.css';
 import useAuth from '../auth/useAuth';
+import { CartSkeleton } from '../component/Skeleton';
 
 function CartPage() {
   const [cartItems, setCartItems] = useState([]);
@@ -94,12 +95,7 @@ function CartPage() {
   const canAfford = userPoints >= totalPointsCost;
 
   if (loading) {
-    return (
-      <div className={`${styles.cartPage} ${styles.loading}`}>
-        <div className={styles.spinner}></div>
-        <p>Загрузка корзины...</p>
-      </div>
-    );
+    return <CartSkeleton />;
   }
 
   return (

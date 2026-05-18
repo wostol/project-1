@@ -1,4 +1,3 @@
-// MyEvents.jsx
 import { useState, useEffect, useCallback } from 'react';
 import useEventStore, {
   useEvents,
@@ -9,6 +8,7 @@ import EventCard from '../component/EventCard/EventCard.js';
 import styles from './MyEvents.module.css';
 import { checkAuthAndRefresh } from '../auth/apiClient';
 import ConfirmDialog from '../component/ConfirmDialog.js';
+import { EventsListSkeleton } from '../component/Skeleton';
 
 function MyEvents() {
   const fetchMyEvents = useEventStore((state) => state.fetchMyEvents);
@@ -72,10 +72,7 @@ const handleUnsubscribeRequest = useCallback((eventId) => {
       <div className={styles.page}>
         <div className={styles.container}>
           <h1 className={styles.pageTitle}>Мои мероприятия</h1>
-          <div className={styles.loadingState}>
-            <div className={styles.spinner}/>
-            <p>Загрузка мероприятий...</p>
-          </div>
+          <EventsListSkeleton count={6} />
         </div>
       </div>
     );

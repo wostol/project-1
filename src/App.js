@@ -1,46 +1,23 @@
 import './App.css';
 import Header from './component/Header';
 import Footer from './component/Footer';
-import Loader from './component/Loader';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import Layout from './component/Layout';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import EventsPage from './Events/EventsPage';
 import EventDetail from './Events/EventDetail';
 import ProfilePage from './Profile/ProfilePage';
 import FavoritesPage from './Favorite/MyEvents';
 import CartPage from './Bag/CartPage';
 import ShopPage from './Shop/ShopPage';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import AuthInitializer from './AuthInitializer';
 import ProtectedRoute from './ProtectedRoute';
 import { LoadingProvider } from './context/PageLoadingContext';
 
-// Компонент обёртка для отслеживания переходов между страницами
-function PageTransitionWrapper({ children }) {
-  const location = useLocation();
-  const [pageLoading, setPageLoading] = useState(true);
-
-  useEffect(() => {
-    // Показываем индикатор загрузки при изменении маршрута
-    setPageLoading(true);
-
-    // Небольшая задержка для плавного перехода
-    const timer = setTimeout(() => {
-      setPageLoading(false);
-    }, 150);
-
-    return () => clearTimeout(timer);
-  }, [location.pathname]);
-
-  if (pageLoading) {
-    return <Loader message="Переход..." />;
-  }
-
-  return children;
-}
 
 function AppContent() {
   return (
-    <div className="App">
+    <Layout>
       <AuthInitializer>
         <Header />
 
@@ -56,43 +33,42 @@ function AppContent() {
               <Route
                 path="/profile"
                 element={
+                      <ProtectedRoute>
                     <ProfilePage />
+                        </ProtectedRoute>
                 }
               />
-              <Route
-                path="/favorites"
-                element={
-                  <ProtectedRoute>
-                    <FavoritesPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/cart"
-                element={
-                  <ProtectedRoute>
-                    <CartPage />
-                  </ProtectedRoute>
-                }
-              />
+<Route
+  path="/favorites"
+  element={
+    <ProtectedRoute message="Для просмотра избранных мероприятий необходимо авторизоваться">
+      <FavoritesPage />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/cart"
+  element={
+    <ProtectedRoute message="Для доступа к корзине необходимо авторизоваться">
+      <CartPage />
+    </ProtectedRoute>
+  }
+/>
             </Routes>
           </div>
         </main>
 
         <Footer />
       </AuthInitializer>
-    </div>
+    </Layout>
   );
 }
 
 function App() {
-  // Убрали начальную загрузку с таймером - теперь показываем только при реальных запросах
   return (
     <Router>
       <LoadingProvider>
-        <PageTransitionWrapper>
-          <AppContent />
-        </PageTransitionWrapper>
+        <AppContent />
       </LoadingProvider>
     </Router>
   );

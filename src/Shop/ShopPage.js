@@ -4,6 +4,7 @@ import styles from './ShopPage.module.css';
 import Shirt from '../image/shirt.png';
 import cap from '../image/cap.png';
 import pen from '../image/pen.png';
+import { ShopSkeleton } from '../component/Skeleton';
 
 // Компонент уведомления
 const Notification = ({ notification, onClose }) => {
@@ -131,12 +132,7 @@ const ShopPage = () => {
   };
 
   if (loading || !imagesLoaded) {
-    return (
-      <div className={`${styles.shopPage} ${styles.loading}`}>
-        <div className={styles.spinner}></div>
-        <p>Загрузка товаров...</p>
-      </div>
-    );
+    return <ShopSkeleton count={3} />;
   }
 
   return (

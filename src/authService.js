@@ -12,16 +12,28 @@ class AuthService {
     oauthRedirect();
   }
 
-  logout() {
+async logout() {
+    // 1. Мгновенная локальная очистка
     localStorage.removeItem(this.userKey);
     sessionStorage.removeItem('code_verifier');
     sessionStorage.removeItem('oauth_state');
-    // Очищаем cookies на сервере через logout endpoint
-    fetch(`${API_BASE_URL}/auth/logout`, {
-      method: 'POST',
-      credentials: 'include',
-    }).catch(() => {});
-    window.location.href = '/';
+
+    try {
+      // 2. Асинхронный запрос на бэкенд
+      const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      
+      if (response.ok) {
+        console.log('[AuthService] Server logout successful');
+      } else {
+        console.warn('[AuthService] Server logout returned non-OK status:', response.status);
+      }
+    } catch (error) {
+      console.warn('[AuthService] Server logout failed, but continuing with local cleanup:', error.message);
+    }
+    // ❌ window.location.href = '/' удалён
   }
 
   async handleCallback(searchParams) {
@@ -29,7 +41,6 @@ class AuthService {
       const result = oauthCodeHandler(searchParams);
 
       if (!result) {
-        // Это нормально, если нет кода в URL
         return false;
       }
 

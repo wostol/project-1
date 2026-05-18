@@ -8,6 +8,7 @@ import logo from '../component/lionsib.svg'
 import useAuth from '../auth/useAuth'
 import authService from '../authService'
 import { apiRequest } from '../auth/apiClient'
+import { ProfileSkeleton } from '../component/Skeleton'
 
 function ProfilePage () {
   const [searchParams] = useSearchParams()
@@ -83,10 +84,17 @@ function ProfilePage () {
     }
   }
 
-  const handleLogout = () => {
-    logout()
-    navigate('/')
+const handleLogout = async () => {
+  try {
+    // 1. Ждём завершения очистки localStorage и запроса к серверу
+    await logout();
+    navigate('/', { replace: true });
+  } catch (error) {
+    console.error('Ошибка при выходе:', error);
+    // Даже при ошибке переходим на главную, так как локальная очистка уже прошла
+    navigate('/', { replace: true });
   }
+};
 
   // ИЗВЛЕКАЕМ ДАННЫЕ ПОЛЬЗОВАТЕЛЯ
   const userFullName =
@@ -213,10 +221,7 @@ function ProfilePage () {
   if (loading || levelsLoading || !orderImagesLoaded) {
     return (
       <div className='profile-page'>
-        <div className='loading-container'>
-          <div className='spinner'></div>
-          <p>Загрузка профиля...</p>
-        </div>
+        <ProfileSkeleton />
       </div>
     )
   }
