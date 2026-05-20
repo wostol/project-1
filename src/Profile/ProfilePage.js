@@ -17,11 +17,29 @@ function ProfilePage () {
   const [userLevel, setUserLevel] = useState(null)
   const [userAchievements, setUserAchievements] = useState(null)
   const [orders, setOrders] = useState([])
+  const [ordersLoading, setOrdersLoading] = useState(true)
   const [allLevels, setAllLevels] = useState([]) // ← НОВОЕ: все уровни из БД
   const [levelsLoading, setLevelsLoading] = useState(true) // ← Загрузка уровней
 
   const { user, loading, updateUser, logout } = useAuth()
   const navigate = useNavigate()
+
+  // Загрузка заказов
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const data = await apiRequest('/profile/orders')
+        setOrders(data)
+      } catch (error) {
+        console.error('Ошибка загрузки заказов:', error)
+        setOrders([])
+      } finally {
+        setOrdersLoading(false)
+      }
+    }
+
+    fetchOrders()
+  }, [])
 
   // Загрузка всех уровней из БД
   useEffect(() => {
@@ -173,42 +191,8 @@ const handleLogout = async () => {
     }
   ]
 
-  // Заказы
-  const displayOrders =
-    orders.length > 0
-      ? orders
-      : [
-          {
-            id: 1,
-            image: cap,
-            product: 'Кружка',
-            description: 'Керамическая кружка 350мл',
-            price: '90 Б',
-            status: 'В работе',
-            time: '16:15',
-            date: '12.12.2025'
-          },
-          {
-            id: 2,
-            image: cap,
-            product: 'Кружка',
-            description: 'Керамическая кружка 350мл',
-            price: '90 Б',
-            status: 'Доставлен',
-            time: '16:15',
-            date: '12.12.2025'
-          },
-          {
-            id: 3,
-            image: pen,
-            product: 'Ручка',
-            description: 'Ручка с логотипом университета',
-            price: '40 Б',
-            status: 'В работе',
-            time: '14:30',
-            date: '10.12.2025'
-          }
-        ]
+  // Заказы - используем данные с бэкенда напрямую, fallback только если пусто и не загружается
+  const displayOrders = orders.length > 0 ? orders : []
 
   // Извлекаем все URL изображений из заказов для предзагрузки
   const orderImageSources = displayOrders.map(o => o.image)
@@ -217,8 +201,8 @@ const handleLogout = async () => {
   const currentLevel = getCurrentLevel()
   const totalPoints = user?.total_points || userLevel?.points || 125
 
-  // 🔥 Ждём завершения загрузки: auth + уровни + изображения
-  if (loading || levelsLoading || !orderImagesLoaded) {
+  // 🔥 Ждём завершения загрузки: auth + уровни + заказы + изображения
+  if (loading || levelsLoading || ordersLoading || !orderImagesLoaded) {
     return (
       <div className='profile-page'>
         <ProfileSkeleton />
@@ -524,35 +508,45 @@ const handleLogout = async () => {
         )}
         {activeTab === 'orders' && (
           <div className='orders-tab'>
-            {displayOrders.map(order => (
-              <div key={order.id} className='order-card'>
-                <div className='order-image-container'>
-                  <img src={order.image || cap} alt={order.product} />
-                </div>
-                <div className='order-info-container'>
-                  <h3 className='product-name'>{order.product}</h3>
-                  <div className='order-details'>
-                    <div className='detail-row'>
-                      <span className='detail-label'>Статус:</span>
-                      <span className='detail-value'>{order.status}</span>
-                    </div>
-                    <div className='detail-row'>
-                      <span className='detail-label'>Время:</span>
-                      <span className='detail-value'>{order.time}</span>
-                    </div>
-                    <div className='detail-row'>
-                      <span className='detail-label'>Дата:</span>
-                      <span className='detail-value'>{order.date}</span>
+            {displayOrders.length > 0 ? (
+              displayOrders.map(order => (
+                <div key={order.id} className='order-card'>
+                  <div className='order-image-container'>
+                    <img src={order.image || cap} alt={order.product} />
+                  </div>
+                  <div className='order-info-container'>
+                    <h3 className='product-name'>{order.product}</h3>
+                    <div className='order-details'>
+                      <div className='detail-row'>
+                        <span className='detail-label'>Статус:</span>
+                        <span className='detail-value'>{order.status}</span>
+                      </div>
+                      <div className='detail-row'>
+                        <span className='detail-label'>Время:</span>
+                        <span className='detail-value'>{order.time}</span>
+                      </div>
+                      <div className='detail-row'>
+                        <span className='detail-label'>Дата:</span>
+                        <span className='detail-value'>{order.date}</span>
+                      </div>
                     </div>
                   </div>
+                  <div className='order-price-container'>
+                    <span className='order-price'>
+                      -{String(order.price).replace(' Б', '')} Б
+                    </span>
+                  </div>
                 </div>
-                <div className='order-price-container'>
-                  <span className='order-price'>
-                    -{order.price.replace(' Б', '')} Б
-                  </span>
-                </div>
+              ))
+            ) : (
+              <div className='no-content'>
+                <svg width='64' height='64' viewBox='0 0 24 24' fill='#6c757d'>
+                  <path d='M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z'/>
+                </svg>
+                <h3>Заказов нет</h3>
+                <p>Вы еще не оформили ни одного заказа</p>
               </div>
-            ))}
+            )}
           </div>
         )}
         {activeTab === 'statictick' && (

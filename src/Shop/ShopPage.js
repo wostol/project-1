@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useImageLoading } from '../hooks/useLoading';
 import styles from './ShopPage.module.css';
-import Shirt from '../image/shirt.png';
-import cap from '../image/cap.png';
-import pen from '../image/pen.png';
 import { ShopSkeleton } from '../component/Skeleton';
+import { apiRequest } from '../auth/apiClient';
 
 // Компонент уведомления
 const Notification = ({ notification, onClose }) => {
@@ -50,42 +48,24 @@ const ShopPage = () => {
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState([]);
 
-  const mockProducts = [
-    {
-      id: 1,
-      name: 'Футболка',
-      description: 'Хлопковая футболка с логотипом',
-      price: 150,
-      image: Shirt,
-      points: 150
-    },
-    {
-      id: 2,
-      name: 'Кружка',
-      description: 'Керамическая кружка 350мл',
-      price: 90,
-      image: cap,
-      points: 90
-    },
-    {
-      id: 3,
-      name: 'Ручка',
-      description: 'Ручка с логотипом',
-      price: 40,
-      image: pen,
-      points: 40
-    }
-  ];
-
   // Извлекаем все URL изображений из продуктов
-  const imageSources = mockProducts.map(p => p.image);
+  const imageSources = products.map(p => p.image).filter(Boolean);
   const { loaded: imagesLoaded } = useImageLoading(imageSources);
 
   useEffect(() => {
-    setTimeout(() => {
-      setProducts(mockProducts);
-      setLoading(false);
-    }, 500);
+    const fetchProducts = async () => {
+      try {
+        const data = await apiRequest('/shop');
+        setProducts(data);
+      } catch (error) {
+        console.error('Ошибка загрузки товаров:', error);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
     updateCartCount();
   }, []);
 
@@ -118,7 +98,7 @@ const ShopPage = () => {
 
   const addToCart = (product) => {
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existingItem = cart.find((item) => item.id === product.id);
+    const existingItem = cart.find((item) => item.uuid === product.uuid);
 
     if (existingItem) {
       existingItem.quantity = (existingItem.quantity || 1) + 1;
@@ -169,7 +149,7 @@ const ShopPage = () => {
 
                 <div className={styles.productFooter}>
                   <div className={styles.productPricePoints}>
-                    <div className={styles.productPoints}>{product.points} баллов</div>
+                    <div className={styles.productPoints}>{product.price} баллов</div>
                   </div>
                   <button className={styles.addToCartBtn} onClick={() => addToCart(product)}>
                     <span>+</span> В корзину

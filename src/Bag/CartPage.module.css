@@ -475,3 +475,138 @@
     font-size: var(--font-size-md);
   }
 }
+
+/* Уведомления */
+.notificationContainer {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.notification {
+  background: var(--color-bg-white);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-width: 280px;
+  max-width: 350px;
+  pointer-events: auto;
+  animation: slideIn 0.3s ease forwards;
+  border-left: 4px solid var(--color-success);
+  position: relative;
+  overflow: hidden;
+}
+
+.notificationExiting {
+  animation: slideOut 0.3s ease forwards;
+}
+
+.notificationIcon {
+  width: 36px;
+  height: 36px;
+  background: var(--color-success-bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notificationIcon svg {
+  width: 20px;
+  height: 20px;
+  color: var(--color-success);
+}
+
+.notificationContent {
+  flex-grow: 1;
+}
+
+.notificationTitle {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.notificationMessage {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.notificationClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notificationClose:hover {
+  color: var(--color-text-primary);
+}
+
+.notificationProgress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--color-success);
+  animation: progress 3s linear forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+@media (max-width: 768px) {
+  .notificationContainer {
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    left: var(--spacing-md);
+  }
+
+  .notification {
+    min-width: auto;
+    width: 100%;
+  }
+}

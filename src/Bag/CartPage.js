@@ -3,10 +3,54 @@ import { Link } from 'react-router-dom';
 import styles from './CartPage.module.css';
 import useAuth from '../auth/useAuth';
 import { CartSkeleton } from '../component/Skeleton';
+import { apiRequest } from '../auth/apiClient';
+import ConfirmDialog from '../component/ConfirmDialog';
+
+// Компонент уведомления
+const Notification = ({ notification, onClose }) => {
+  const [exiting, setExiting] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setExiting(true);
+      setTimeout(() => onClose(notification.id), 300);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [notification.id, onClose]);
+
+  const handleClose = () => {
+    setExiting(true);
+    setTimeout(() => onClose(notification.id), 300);
+  };
+
+  return (
+    <div className={`${styles.notification} ${exiting ? styles.notificationExiting : ''}`}>
+      <div className={styles.notificationIcon}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <div className={styles.notificationContent}>
+        <div className={styles.notificationTitle}>{notification.title}</div>
+        <div className={styles.notificationMessage}>{notification.message}</div>
+      </div>
+      <button className={styles.notificationClose} onClick={handleClose}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div className={styles.notificationProgress}></div>
+    </div>
+  );
+};
 
 function CartPage() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, itemId: null });
   const {user, isAuthenticated } = useAuth();
 
   const userPoints = isAuthenticated && user?.totalPoints ? user.totalPoints : 0;
@@ -39,9 +83,19 @@ function CartPage() {
     });
   };
 
+  const addNotification = (title, message) => {
+    const id = Date.now() + Math.random();
+    setNotifications((prev) => [...prev, { id, title, message }]);
+  };
+
+  const removeNotification = (id) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
+
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) {
-      removeItem(id);
+      // Открываем диалог подтверждения удаления
+      setDeleteDialog({ isOpen: true, itemId: id });
       return;
     }
     setCartItems(items => {
@@ -55,6 +109,23 @@ function CartPage() {
     });
   };
 
+  const confirmDeleteItem = () => {
+    if (deleteDialog.itemId) {
+      setCartItems(items => {
+        const newItems = items.filter(item => item.id !== deleteDialog.itemId);
+        localStorage.setItem('cart', JSON.stringify(newItems));
+        const totalItems = newItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+        updateHeaderBadge(totalItems);
+        return newItems;
+      });
+    }
+    setDeleteDialog({ isOpen: false, itemId: null });
+  };
+
+  const cancelDeleteItem = () => {
+    setDeleteDialog({ isOpen: false, itemId: null });
+  };
+
   const removeItem = (id) => {
     setCartItems(items => {
       const newItems = items.filter(item => item.id !== id);
@@ -65,11 +136,17 @@ function CartPage() {
     });
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (cartItems.length === 0) {
       alert('Корзина пуста');
       return;
     }
+
+    if (!isAuthenticated) {
+      alert('Пожалуйста, авторизуйтесь для оформления заказа');
+      return;
+    }
+
     const totalPointsCost = cartItems.reduce((sum, item) =>
       sum + ((item.pricePoints || item.price || 0) * (item.quantity || 1)), 0);
 
@@ -80,13 +157,31 @@ function CartPage() {
     }
 
     if (window.confirm(`Оплатить заказ на сумму ${totalPointsCost} баллов?\nПосле оплаты у вас останется: ${userPoints - totalPointsCost} баллов`)) {
-      const newPointsBalance = userPoints - totalPointsCost;
+      setCheckoutLoading(true);
 
-      setCartItems([]);
-      localStorage.setItem('cart', '[]');
-      updateHeaderBadge(0);
+      try {
+        // Формируем заказ - бэкенд ожидает объект { productUuids: [...] }
+        const productUuids = cartItems.map(item => item.uuid || item.id);
 
-      alert(`Заказ успешно оформлен!\nСписано: ${totalPointsCost} баллов\nОстаток: ${newPointsBalance} баллов\nСпасибо за покупку!`);
+        // Отправляем POST запрос на /shop/orders
+        await apiRequest('/shop/orders', {
+          method: 'POST',
+          body: JSON.stringify({ productUuids })
+        });
+
+        // Очищаем корзину после успешного заказа
+        setCartItems([]);
+        localStorage.setItem('cart', '[]');
+        updateHeaderBadge(0);
+
+        // Показываем уведомление об успехе
+        addNotification('Заказ оформлен!', 'Ваш заказ успешно оформлен и будет обработан в ближайшее время.');
+      } catch (error) {
+        console.error('Ошибка при оформлении заказа:', error);
+        alert(`Ошибка при оформлении заказа: ${error.message}`);
+      } finally {
+        setCheckoutLoading(false);
+      }
     }
   };
 
@@ -218,11 +313,11 @@ function CartPage() {
             )}
 
             <button
-              className={`${styles.checkoutBtn} ${!canAfford ? styles.disabled : ''}`}
+              className={`${styles.checkoutBtn} ${!canAfford || checkoutLoading ? styles.disabled : ''}`}
               onClick={handleCheckout}
-              disabled={!canAfford}
+              disabled={!canAfford || checkoutLoading}
             >
-              {canAfford ? `Оплатить ${totalPointsCost} баллов` : 'Недостаточно баллов'}
+              {checkoutLoading ? 'Оформление...' : (canAfford ? `Оплатить ${totalPointsCost} баллов` : 'Недостаточно баллов')}
             </button>
 
             <div className={styles.pointsNote}>
@@ -237,6 +332,28 @@ function CartPage() {
           </div>
         </div>
       )}
+
+      {/* Диалог подтверждения удаления товара */}
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        title="Удаление товара"
+        message="Удалить выбранный товар? Отменить действие будет невозможно."
+        onConfirm={confirmDeleteItem}
+        onCancel={cancelDeleteItem}
+        confirmText="Удалить"
+        cancelText="Отмена"
+      />
+
+      {/* Контейнер уведомлений */}
+      <div className={styles.notificationContainer}>
+        {notifications.map((notification) => (
+          <Notification
+            key={notification.id}
+            notification={notification}
+            onClose={removeNotification}
+          />
+        ))}
+      </div>
     </div>
   );
 }
