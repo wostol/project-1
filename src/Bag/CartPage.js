@@ -9,7 +9,7 @@ import ConfirmDialog from '../component/ConfirmDialog';
 // Компонент уведомления
 const Notification = ({ notification, onClose }) => {
   const [exiting, setExiting] = useState(false);
-  
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setExiting(true);
@@ -163,7 +163,7 @@ function CartPage() {
     }
 
     const totalPointsCost = cartItems.reduce((sum, item) =>
-      sum + ((item.pricePoints || item.price || 0) * (item.quantity || 1)), 0);
+      sum + ((item.points || 0) * (item.quantity || 1)), 0);
 
     if (userPoints < totalPointsCost) {
       const missingPoints = totalPointsCost - userPoints;
@@ -209,7 +209,7 @@ setCheckoutDialog({
     setCheckoutDialog({ isOpen: false, totalPointsCost: 0, remainingPoints: 0 });
   };
     const totalPointsCost = cartItems.reduce((sum, item) =>
-    sum + ((item.pricePoints || item.price || 0) * (item.quantity || 1)), 0);
+    sum + ((item.points || 0) * (item.quantity || 1)), 0);
   const canAfford = userPoints >= totalPointsCost;
 
   if (loading) {
@@ -260,9 +260,9 @@ setCheckoutDialog({
                   <p className={styles.cartItemDescription}>{item.description}</p>
                   <div className={styles.cartItemInfo}>
                     <div className={styles.cartItemPrice}>
-                      <span className={styles.pointsPrice}>{(item.pricePoints || item.price || 0)} баллов</span>
-                      {item.originalPrice && (
-                        <span className={styles.originalPrice}>{item.originalPrice}₽</span>
+                      <span className={styles.pointsPrice}>{(item.points || 0)} баллов</span>
+                      {item.price && (
+                        <span className={styles.originalPrice}>{item.price}₽</span>
                       )}
                     </div>
                     {item.givesPoints && (
@@ -279,7 +279,7 @@ setCheckoutDialog({
                     <button className={styles.quantityBtn} onClick={() => handleIncreaseQuantity(item.uuid)}>+</button>
                   </div>
                   <div className={styles.cartItemTotal}>
-                    {(item.pricePoints || item.price || 0) * (item.quantity || 1)} баллов
+                    {(item.points || 0) * (item.quantity || 1)} баллов
                   </div>
                   <button className={styles.removeBtn} onClick={() => removeItem(item.uuid)}>
                     Удалить

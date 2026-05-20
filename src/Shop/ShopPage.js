@@ -148,8 +148,11 @@ const ShopPage = () => {
                 <p className={styles.productDescription}>{product.description}</p>
 
                 <div className={styles.productFooter}>
-                  <div className={styles.productPricePoints}>
-                    <div className={styles.productPoints}>{product.price} баллов</div>
+                  <div className={styles.productPriceWrapper}>
+                    <div className={styles.productPoints}>{product.points || 0} баллов</div>
+                    {product.price && (
+                      <div className={styles.productRubles}>{product.price} ₽</div>
+                    )}
                   </div>
                   <button className={styles.addToCartBtn} onClick={() => addToCart(product)}>
                     <span>+</span> В корзину

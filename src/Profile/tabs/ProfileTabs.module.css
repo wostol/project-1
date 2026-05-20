@@ -1,0 +1,1438 @@
+/* ProfileTabs.module.css */
+
+
+/* ===== ОСНОВНОЙ КОНТЕЙНЕР СТРАНИЦЫ ===== */
+.profilePage {
+  font-family: 'Kontora';
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.profileHeader {
+  display: flex;
+  margin-bottom: 30px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: flex-start;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ===== КНОПКА ВЫХОДА ===== */
+.profileExit {
+  grid-auto-flow: column;
+  font-family: 'Kontora';
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  align-items: center;
+  border: 2px solid #1A4C8B;
+  color: #003466;
+  border-radius: 35px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
+  font-size: 15px;
+  font-weight: 400;
+  cursor: pointer;
+  min-width: 180px;
+  position: relative;
+  overflow: hidden;
+  background-color: transparent;
+  transition: color 0.5s ease;
+}
+
+.profileExit::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #1A4C8B;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-100%);
+  z-index: 0;
+}
+
+.profileExit:hover::before {
+  transform: translateX(0);
+}
+
+.logImg {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  z-index: 1;
+  transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  grid-column: 1;
+  justify-self: center;
+}
+
+.logImg .log {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.profileExit span:last-child {
+  position: relative;
+  z-index: 1;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  grid-column: 2;
+  justify-self: center;
+  white-space: nowrap;
+}
+
+.profileExit:hover .logImg {
+  transform: translateX(calc(180px - 43px));
+}
+
+.profileExit:hover span:last-child {
+  transform: translateX(calc(-100% - 20px));
+}
+
+.profileExit:hover {
+  color: #ffffff;
+}
+
+.profileTitle {
+  font-family: 'Kontora';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 55px;
+  line-height: 72px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #003466;
+  margin: 0;
+}
+
+/* ===== КАРТОЧКА СТУДЕНТА ===== */
+.studentCard {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 25px;
+  border-radius: 20px;
+  border: 2px solid rgba(248, 248, 248, 0.04);
+  background: white;
+}
+
+.studentAvatar {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #003466, #007bff);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 36px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.studentInfo {
+  flex-grow: 1;
+}
+
+.studentName {
+  font-family: 'Kontora';
+  font-size: 32px;
+  font-weight: 600;
+  color: #003466;
+  margin: 0 0 8px 0;
+}
+
+.studentDetails {
+  font-family: 'Kontora';
+  font-size: 18px;
+  color: rgba(0, 52, 102, 0.75);
+  margin: 0;
+}
+
+/* ===== ТАБЫ ПРОФИЛЯ ===== */
+.profileTabs {
+  padding-left: 11px;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.tabBtn {
+  font-family: 'Kontora';
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 30px;
+  border: 2px solid rgba(248, 248, 248, 0.04);
+  background: rgba(234, 236, 240, 1);
+  color: rgba(0, 52, 102, 0.45);
+  border-radius: 25px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
+  font-size: 15px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 180px;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.tabBtn:hover {
+  color: rgba(0, 52, 102, 1);
+}
+
+.tabBtn.active {
+  border: 2px solid rgba(248, 248, 248, 0.04);
+  box-shadow: 0px 0px 4px 2px #003466;
+  border-radius: 25px;
+  background: white;
+  color: #003465;
+}
+
+.tabIcon {
+  font-size: 18px;
+}
+
+/* ===== КОНТЕНТ ТАБОВ ===== */
+.tabContent {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0px 4px 12px rgba(0, 52, 102, 0.08);
+  border: 1px solid rgba(0, 52, 102, 0.1);
+}
+
+.noContent {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.noContent h3 {
+  color: #495057;
+  margin: 20px 0 10px 0;
+  font-size: 24px;
+}
+
+.noContent p {
+  color: #6c757d;
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ===== ВКЛАДКА "МОИ БАЛЛЫ" ===== */
+.pointsTab {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pointsCard {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0px 4px 12px rgba(0, 52, 102, 0.08);
+  border: 1px solid rgba(0, 52, 102, 0.1);
+}
+
+.pointsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 25px;
+  border-bottom: 2px solid rgba(0, 52, 102, 0.1);
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.pointsTitleSection {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.pointsTitleSection h3 {
+  font-family: 'Kontora';
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  color: #003466;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.userLevel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: linear-gradient(135deg, #003466, #0056b3);
+  color: white;
+  border-radius: 25px;
+  font-family: 'Kontora';
+  font-size: clamp(14px, 2vw, 16px);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 52, 102, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.userLevel:hover {
+  transform: translateY(-2px);
+}
+
+.userLevelIcon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.pointsTotal {
+  font-family: 'Kontora';
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 700;
+  color: #28be46;
+  line-height: 1.2;
+  text-align: right;
+}
+
+.pointsTotal span {
+  font-size: clamp(14px, 2vw, 18px);
+  font-weight: 500;
+  color: #6c757d;
+  display: block;
+  margin-top: 4px;
+}
+
+.pointsDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 20px;
+}
+
+.pointsItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(0, 52, 102, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.pointsItem:first-child {
+  border-top: none;
+}
+
+.pointsItem:last-of-type {
+  border-bottom: none;
+  margin-top: 10px;
+  padding-top: 25px;
+  padding-bottom: 0px;
+}
+
+.pointsLabel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Kontora';
+  font-size: clamp(14px, 2vw, 16px);
+  color: #495057;
+  font-weight: 500;
+}
+
+.pointsLabelIcon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.pointsValue {
+  font-family: 'Kontora';
+  font-size: clamp(16px, 2.5vw, 20px);
+  color: #003466;
+  font-weight: 700;
+}
+
+.pointsItem.total .pointsLabel,
+.pointsItem.total .pointsValue {
+  font-weight: 700;
+  color: #003466;
+}
+
+/* ===== ПРОГРЕСС УРОВНЯ ===== */
+.levelProgressCard {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0px 4px 12px rgba(0, 52, 102, 0.08);
+  border: 1px solid rgba(0, 52, 102, 0.1);
+}
+
+.levelProgressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.levelInfoLeft {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.levelCircle {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #003466, #0056b3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: 'Kontora';
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.levelName {
+  font-family: 'Kontora';
+  font-size: clamp(16px, 2.5vw, 20px);
+  font-weight: 700;
+  color: #003466;
+  margin: 0;
+}
+
+.levelRange {
+  font-family: 'Kontora';
+  font-size: clamp(13px, 2vw, 15px);
+  color: #6c757d;
+  margin: 4px 0 0 0;
+}
+
+.levelInfoRight {
+  text-align: right;
+}
+
+.levelNextLabel {
+  font-family: 'Kontora';
+  font-size: clamp(14px, 2vw, 16px);
+  font-weight: 600;
+  color: #003466;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.levelNextLabel svg {
+  width: 16px;
+  height: 16px;
+}
+
+.levelNextValue {
+  font-family: 'Kontora';
+  font-size: clamp(13px, 2vw, 15px);
+  color: #6c757d;
+  margin: 4px 0 0 0;
+}
+
+.progressBarContainer {
+  margin: 20px 0 15px 0;
+}
+
+.progressBar {
+  width: 100%;
+  height: 12px;
+  background: linear-gradient(90deg, #e9ecef, #dee2e6);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-grad-first), var(--color-success));
+  border-radius: 10px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.progressFill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.progressText {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Kontora';
+  font-size: clamp(13px, 2vw, 15px);
+  color: #6c757d;
+  margin: 10px 0 0 0;
+  font-weight: 500;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.progressTextLeft {
+  color: #003466;
+  font-weight: 600;
+}
+
+.progressTextRight {
+  color: #6c757d;
+}
+
+.pointsInfoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.infoCard {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0px 4px 12px rgba(0, 52, 102, 0.08);
+  border: 1px solid rgba(0, 52, 102, 0.1);
+}
+
+.infoCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.infoCardIcon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #003466, #0056b3);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.infoCardIcon svg {
+  width: 18px;
+  height: 18px;
+  color: white;
+}
+
+.infoCardTitle {
+  font-family: 'Kontora';
+  font-size: clamp(16px, 2.5vw, 20px);
+  font-weight: 700;
+  color: #003466;
+  margin: 0;
+}
+
+.infoCardContent {
+  font-family: 'Kontora';
+  font-size: clamp(14px, 2vw, 16px);
+  color: #495057;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.privilegesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.privilegesList li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Kontora';
+  font-size: clamp(14px, 2vw, 16px);
+  color: #495057;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 52, 102, 0.05);
+}
+
+.privilegesList li:last-child {
+  border-bottom: none;
+}
+
+.privilegeCheck {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #29BE46;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(41, 190, 70, 0.5);
+}
+
+.privilegeCheck svg {
+  width: 12px;
+  height: 12px;
+  color: white;
+}
+
+/* ===== ДОСТИЖЕНИЯ & УРОВНИ ===== */
+.achievementsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.achievementCard {
+  opacity: 1;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.achievementCard:hover {
+  border-color: #003466;
+  box-shadow: 0px 4px 12px rgba(0, 52, 102, 0.1);
+}
+
+.achievementCard.locked {
+  opacity: 0.6;
+  background: #f8f9fa;
+}
+
+.achievementIcon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.achievementCard h4 {
+  color: #003466;
+  margin: 0 0 10px 0;
+  font-size: 18px;
+}
+
+.achievementCard p {
+  color: #6c757d;
+  margin: 0;
+  font-size: 14px;
+}
+
+.levelsSection {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0px 4px 12px rgba(0, 52, 102, 0.08);
+  border: 1px solid rgba(0, 52, 102, 0.1);
+}
+
+.levelsTitle {
+  font-family: 'Kontora';
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  color: #003466;
+  margin: 0 0 25px 0;
+}
+
+.levelsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.levelItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(0, 52, 102, 0.1);
+  transition: all 0.3s ease;
+}
+
+.levelItem:first-child { padding-top: 0; }
+.levelItem:last-child { border-bottom: none; padding-bottom: 0; }
+
+.levelItem:hover {
+  background-color: #f8f9fa;
+  margin: 0 -30px;
+  padding: 20px 30px;
+  border-radius: 12px;
+}
+
+.levelItem.current {
+  background-color: rgba(40, 167, 69, 0.05);
+}
+
+.levelItem .levelCircle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: 'Kontora';
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.levelItem.current .levelCircle {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+}
+
+.levelInfoBlock {
+  flex: 1;
+  min-width: 0;
+}
+
+.levelHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.levelName {
+  font-family: 'Kontora';
+  font-size: clamp(18px, 2.5vw, 22px);
+  font-weight: 700;
+  color: #003466;
+  margin: 0;
+}
+
+.levelBadge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-family: 'Kontora';
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.levelBadge.completed {
+  background: linear-gradient(135deg, #003466, #0056b3);
+  color: white;
+}
+
+.levelBadge.current {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+}
+
+.levelBadge.locked {
+  background: linear-gradient(135deg, #e9ecef, #dee2e6);
+  color: #6c757d;
+}
+
+.levelPoints {
+  font-family: 'Kontora';
+  font-size: clamp(14px, 2vw, 16px);
+  color: #6c757d;
+  margin: 0 0 8px 0;
+  font-weight: 500;
+}
+
+.levelDescription {
+  font-family: 'Kontora';
+  font-size: clamp(13px, 2vw, 15px);
+  color: #6c757d;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ===== ЗАКАЗЫ ===== */
+.ordersTab {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.orderCard {
+  display: grid;
+  grid-template-columns: minmax(100px, 180px) 1fr auto;
+  gap: clamp(16px, 3vw, 32px);
+  padding: clamp(20px, 3vw, 24px) 20px;
+  border-bottom: 1px solid #e9ecef;
+  align-items: center;
+  transition: background-color 0.2s ease, padding 0.2s ease, margin 0.2s ease;
+}
+
+.orderCard:last-child { border-bottom: none; }
+
+.orderCard:hover {
+  background-color: #f8f9fa;
+  margin: 0 -30px;
+  padding: clamp(20px, 3vw, 24px) clamp(20px, 3vw, 30px);
+  border-radius: 12px;
+}
+
+.orderImageContainer {
+  width: 100%;
+  max-width: 180px;
+  min-width: 100px;
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, #003466 0%, #0056b3 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  border-radius: 16px;
+}
+
+.orderImageContainer img {
+  width: 85%;
+  height: 85%;
+  object-fit: contain;
+}
+
+.orderInfoContainer {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.5vw, 12px);
+  min-width: 0;
+}
+
+.productName {
+  font-size: clamp(20px, 3vw, 24px);
+  font-weight: 700;
+  color: #003466;
+  margin: 0;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.orderDetails {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 0.8vw, 6px);
+}
+
+.detailRow {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 12px);
+  font-size: clamp(13px, 2vw, 14px);
+  flex-wrap: wrap;
+}
+
+.detailLabel {
+  color: #6c757d;
+  font-weight: 500;
+  min-width: 60px;
+}
+
+.detailValue {
+  color: #003466;
+  font-weight: 600;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: clamp(4px, 0.8vw, 6px) clamp(10px, 2vw, 14px);
+  border-radius: 20px;
+  font-size: clamp(12px, 1.8vw, 13px);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statusWork { background: #fff3e0; color: #ff9800; }
+.statusDelivered { background: #e8f5e9; color: #28a745; }
+
+.orderPriceContainer {
+  text-align: right;
+  white-space: normal;
+}
+
+.orderPrice {
+  font-family: 'Kontora', system-ui, -apple-system, sans-serif;
+  font-size: clamp(24px, 4vw, 28px);
+  font-weight: 700;
+  color: #003466;
+  white-space: normal;
+  word-break: keep-all;
+  display: inline-block;
+}
+
+/* ===== СТАТИСТИКА ===== */
+.statisticsTab {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.statsHeaderSection {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.statsMainTitle {
+  font-family: 'Kontora';
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 700;
+  color: #003466;
+  margin: 0 0 10px 0;
+}
+
+.statsSubtitle {
+  font-family: 'Kontora';
+  font-size: clamp(14px, 2vw, 16px);
+  color: #6c757d;
+  margin: 0;
+}
+
+.statsOverview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.statCardModern {
+  background: white;
+  border-radius: 20px;
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 12px rgba(0, 52, 102, 0.08);
+  border: 1px solid rgba(0, 52, 102, 0.1);
+  transition: all 0.3s ease;
+}
+
+.statCardModern:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 52, 102, 0.15);
+}
+
+.statCardIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statCardIcon.tournaments { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+.statCardIcon.points { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; }
+.statCardIcon.level { background: linear-gradient(135deg, #003466 0%, #0056b3 100%); color: white; }
+
+.statCardContent { flex: 1; }
+
+.statValueLarge {
+  font-family: 'Kontora';
+  font-size: clamp(32px, 5vw, 42px);
+  font-weight: 700;
+  color: #003466;
+  line-height: 1.2;
+  margin-bottom: 5px;
+}
+
+.statLabelMedium {
+  font-family: 'Kontora';
+  font-size: clamp(14px, 2vw, 16px);
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.statsAchievementsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.achievementPlaceCard {
+  background: white;
+  border-radius: 20px;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 52, 102, 0.08);
+  border: 2px solid rgba(0, 52, 102, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.achievementPlaceCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, transparent, currentColor, transparent);
+  opacity: 0.5;
+}
+
+.achievementPlaceCard.first { border-color: #FFD700; color: #FFD700; }
+.achievementPlaceCard.first::before { background: linear-gradient(90deg, transparent, #FFD700, transparent); }
+.achievementPlaceCard.second { border-color: #C0C0C0; color: #C0C0C0; }
+.achievementPlaceCard.second::before { background: linear-gradient(90deg, transparent, #C0C0C0, transparent); }
+.achievementPlaceCard.third { border-color: #CD7F32; color: #CD7F32; }
+.achievementPlaceCard.third::before { background: linear-gradient(90deg, transparent, #CD7F32, transparent); }
+
+.achievementPlaceCard:hover {
+  transform: translateY(-5px) scale(1.02);
+}
+
+.placeIcon { font-size: 48px; margin-bottom: 10px; }
+.placeValue {
+  font-family: 'Kontora';
+  font-size: clamp(36px, 6vw, 48px);
+  font-weight: 700;
+  color: #003466;
+  margin-bottom: 8px;
+}
+.placeLabel {
+  font-family: 'Kontora';
+  font-size: clamp(14px, 2vw, 16px);
+  color: #6c757d;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.placePercentage {
+  font-family: 'Kontora';
+  font-size: clamp(12px, 2vw, 14px);
+  color: #28a745;
+  font-weight: 600;
+}
+
+.statsEventsHistory {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 52, 102, 0.08);
+  border: 1px solid rgba(0, 52, 102, 0.1);
+}
+
+.historyTitle {
+  font-family: 'Kontora';
+  font-size: clamp(20px, 3vw, 24px);
+  font-weight: 700;
+  color: #003466;
+  margin: 0 0 25px 0;
+  padding-bottom: 15px;
+  border-bottom: 2px solid rgba(0, 52, 102, 0.1);
+}
+
+.eventsHistoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.eventHistoryItem {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.eventHistoryItem:hover {
+  background: #e9ecef;
+  transform: translateX(5px);
+}
+
+.eventHistoryItem.participant { border-left-color: #003466; }
+.eventHistoryItem.winner { border-left-color: #28a745; }
+.eventHistoryItem.spectator { border-left-color: #6c757d; }
+
+.eventHistoryDate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+  padding: 10px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.eventDay {
+  font-family: 'Kontora';
+  font-size: 28px;
+  font-weight: 700;
+  color: #003466;
+  line-height: 1;
+}
+
+.eventMonth {
+  font-family: 'Kontora';
+  font-size: 12px;
+  color: #6c757d;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.eventHistoryInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.eventHistoryName {
+  font-family: 'Kontora';
+  font-size: clamp(16px, 2.5vw, 18px);
+  font-weight: 700;
+  color: #003466;
+  margin: 0 0 5px 0;
+}
+
+.eventHistoryRole {
+  font-family: 'Kontora';
+  font-size: clamp(13px, 2vw, 14px);
+  color: #6c757d;
+  margin: 0 0 5px 0;
+}
+
+.eventHistoryPoints {
+  font-family: 'Kontora';
+  font-size: clamp(14px, 2vw, 15px);
+  font-weight: 600;
+  color: #28a745;
+  margin: 0;
+}
+
+.eventHistoryBadge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-family: 'Kontora';
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.eventHistoryBadge.participant { background: linear-gradient(135deg, #003466, #0056b3); color: white; }
+.eventHistoryBadge.winner { background: linear-gradient(135deg, #28a745, #20c997); color: white; }
+.eventHistoryBadge.spectator { background: linear-gradient(135deg, #6c757d, #495057); color: white; }
+
+.loadMoreBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 15px;
+  margin-top: 20px;
+  background: white;
+  border: 2px solid rgba(0, 52, 102, 0.2);
+  border-radius: 12px;
+  font-family: 'Kontora';
+  font-size: 15px;
+  font-weight: 600;
+  color: #003466;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  justify-content: center;
+}
+
+.loadMoreBtn:hover {
+  background: #f8f9fa;
+  border-color: #003466;
+  transform: translateY(-2px);
+}
+
+/* ===== УВЕДОМЛЕНИЯ ===== */
+.notificationsTab {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.notificationItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.notificationItem:last-child { border-bottom: none; }
+.notificationItem:hover { background-color: #f8f9fa; }
+.notificationItem.unread { background-color: rgba(0, 52, 102, 0.03); }
+
+.notificationIcon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #003466, #0056b3);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notificationIcon svg { width: 20px; height: 20px; color: white; }
+
+.notificationContent { flex: 1; min-width: 0; }
+
+.notificationTitle {
+  font-family: 'Kontora';
+  font-size: 16px;
+  font-weight: 700;
+  color: #003466;
+  margin: 0 0 6px 0;
+}
+
+.notificationMessage {
+  font-family: 'Kontora';
+  font-size: 14px;
+  color: #6c757d;
+  margin: 0 0 8px 0;
+  line-height: 1.5;
+}
+
+.notificationTime {
+  font-family: 'Kontora';
+  font-size: 12px;
+  color: #adb5bd;
+}
+
+.notificationUnreadDot {
+  width: 8px;
+  height: 8px;
+  background: #28a745;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 18px;
+}
+
+/* ===== АДАПТИВНОСТЬ (Все медиа-запросы объединены и оптимизированы) ===== */
+@media (max-width: 1024px) {
+  .profileExit { max-width: 180px; font-size: 14px; }
+  .logImg { width: 36px; height: 36px; }
+  .profileExit:hover .logImg { transform: translateX(calc(180px - 43px)); }
+  .profileExit:hover span:last-child { transform: translateX(calc(-100% - 20px)); }
+  .profileTitle { font-size: 45px; line-height: 60px; }
+  
+  .studentCard { padding: 20px; gap: 20px; }
+  .studentAvatar { width: 90px; height: 90px; font-size: 32px; }
+  .studentName { font-size: 28px; }
+  .studentDetails { font-size: 16px; }
+  
+  .profileTabs { gap: 14px; padding-left: 0; }
+  .tabBtn { min-width: 160px; padding: 11px 25px; font-size: 14px; }
+  
+  .pointsInfoGrid { grid-template-columns: 1fr; }
+  
+  .orderCard {
+    grid-template-columns: minmax(80px, 120px) 1fr auto;
+    gap: clamp(12px, 2vw, 20px);
+  }
+  .orderImageContainer { width: 100%; max-width: 120px; min-width: 80px; }
+  .orderPrice { font-size: clamp(22px, 3.5vw, 26px); }
+}
+
+@media (max-width: 768px) {
+  .profileHeader { flex-direction: column; align-items: stretch; gap: 20px; margin-bottom: 25px; }
+  .profileTitle { font-size: 40px; line-height: 52px; justify-content: center; }
+  .profileExit { max-width: 160px; font-size: 13px; align-self: flex-end; justify-self: end; }
+  .logImg { width: 32px; height: 32px; }
+  .profileExit:hover .logImg { transform: translateX(calc(160px - 43px)); }
+  .profileExit:hover span:last-child { transform: translateX(calc(-100% - 20px)); }
+  
+  .studentCard { padding: 20px; gap: 15px; }
+  .studentAvatar { width: 80px; height: 80px; font-size: 28px; }
+  .studentName { font-size: 24px; margin-bottom: 6px; }
+  .studentDetails { font-size: 15px; }
+  
+  .profileTabs { gap: 12px; margin-bottom: 25px; justify-content: center; padding-left: 0; }
+  .tabBtn { min-width: 150px; padding: 10px 22px; font-size: 14px; }
+  .tabIcon { font-size: 16px; }
+  
+  .pointsCard, .levelProgressCard, .infoCard { padding: 25px 20px; }
+  .pointsHeader { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .pointsTotal { width: 100%; text-align: right; }
+  .levelProgressHeader { flex-direction: column; align-items: flex-start; gap: 15px; }
+  .levelInfoRight { text-align: left; width: 100%; }
+  .levelNextLabel { justify-content: flex-start; }
+  .pointsItem { padding: 15px 0; }
+  .progressBar { height: 10px; }
+  
+  .levelsSection { padding: 25px 20px; }
+  .levelItem { gap: 15px; }
+  .levelItem:hover { margin: 0 -20px; padding: 20px 20px; }
+  .levelItem .levelCircle { width: 45px; height: 45px; font-size: 18px; }
+  .levelHeader { gap: 10px; }
+  .levelName { font-size: 18px; }
+  
+  .orderCard {
+    grid-template-columns: minmax(70px, 90px) 1fr;
+    gap: clamp(10px, 1.5vw, 16px);
+  }
+  .orderPriceContainer { grid-column: 2; text-align: right; white-space: normal; }
+  .orderImageContainer { width: 100%; max-width: 90px; min-width: 70px; }
+  .product-name { font-size: clamp(18px, 2.5vw, 20px); }
+  .order-price { font-size: clamp(20px, 3vw, 24px); }
+  .orderCard:hover { margin: 0 -20px; padding: clamp(16px, 2.5vw, 20px) clamp(16px, 2.5vw, 20px); }
+  .detailRow { gap: clamp(6px, 1.2vw, 10px); }
+  .detailLabel { min-width: 50px; }
+  
+  .statsOverview { grid-template-columns: 1fr; }
+  .statCardModern { padding: 20px; }
+  .statCardIcon { width: 56px; height: 56px; }
+  .statsAchievementsGrid { grid-template-columns: 1fr; }
+  .achievementPlaceCard { padding: 25px 20px; }
+  .statsEventsHistory { padding: 25px 20px; }
+  .eventHistoryItem { flex-direction: column; align-items: flex-start; gap: 15px; }
+  .eventHistoryDate { flex-direction: row; gap: 8px; min-width: auto; }
+  .eventDay { font-size: 24px; }
+  .eventHistoryBadge { align-self: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .profilePage { padding: 0 15px; }
+  .profileHeader { gap: 15px; margin-bottom: 20px; }
+  .profileTitle { font-size: 32px; line-height: 42px; }
+  .profileExit { max-width: 140px; font-size: 12px; align-self: center; justify-self: center; }
+  .logImg { width: 28px; height: 28px; }
+  .profileExit:hover .logImg { transform: translateX(calc(140px - 43px)); }
+  .profileExit:hover span:last-child { transform: translateX(calc(-100% - 20px)); }
+  .profileTabs { justify-content: center; }
+  .tabBtn { min-width: 150px; padding: 10px 20px; font-size: 13px; }
+  
+  .studentCard { flex-direction: column; text-align: center; padding: 20px 15px; gap: 15px; }
+  .studentAvatar { width: 100px; height: 100px; font-size: 36px; margin: 0 auto; }
+  .studentInfo { width: 100%; }
+  .studentName { font-size: 22px; margin-bottom: 8px; }
+  .studentDetails { font-size: 14px; line-height: 1.5; }
+  
+  .profileTabs { gap: 10px; margin-bottom: 20px; justify-content: center; padding-left: 0; }
+  .tabBtn {
+    min-width: 140px; padding: 9px 18px; font-size: 13px;
+    flex: 1 1 calc(50% - 10px); max-width: calc(50% - 10px);
+  }
+  
+  .pointsCard, .levelProgressCard, .infoCard { padding: 20px 15px; border-radius: 16px; }
+  .userLevel { padding: 6px 16px; }
+  .levelItem .levelCircle { width: 45px; height: 45px; font-size: 18px; }
+  .pointsItem { padding: 12px 0; }
+  .infoCardHeader { gap: 10px; }
+  .infoCardIcon { width: 28px; height: 28px; }
+  .infoCardIcon svg { width: 16px; height: 16px; }
+  
+  .levelsSection { padding: 20px 15px; border-radius: 16px; }
+  .levelItem { padding: 15px 0; }
+  .levelItem:hover { margin: 0 -15px; padding: 15px 15px; }
+  .levelItem .levelCircle { width: 40px; height: 40px; font-size: 16px; }
+  .levelName { font-size: 16px; }
+  .levelPoints { font-size: 14px; }
+  .levelDescription { font-size: 13px; }
+  .levelBadge { font-size: 10px; padding: 3px 10px; }
+  
+  .orderCard { grid-template-columns: 1fr; text-align: center; gap: clamp(12px, 2vw, 16px); }
+  .orderImageContainer { margin: 0 auto; max-width: 110px; min-width: 90px; width: 100%; }
+  .orderInfoContainer { text-align: center; }
+  .orderPriceContainer { grid-column: 1; text-align: center; }
+  .detailRow { justify-content: center; }
+  .detailLabel { min-width: auto; }
+  .statusBadge { white-space: normal; display: inline-block; }
+  .orderCard:hover { margin: 0 -15px; padding: clamp(14px, 2vw, 18px) clamp(14px, 2vw, 18px); }
+  .orderPrice { font-size: clamp(22px, 4vw, 26px); display: inline-block; }
+  
+  .statsMainTitle { font-size: 24px; }
+  .statValueLarge { font-size: 28px; }
+  .placeValue { font-size: 36px; }
+  .statsEventsHistory { padding: 20px 15px; }
+  .eventHistoryItem { padding: 15px; }
+  .eventHistoryName { font-size: 16px; }
+  .loadMoreBtn { padding: 12px; font-size: 14px; }
+}
+
+@media (max-width: 400px) {
+  .profileTabs { gap: 8px; }
+  .tabBtn {
+    min-width: 130px; padding: 8px 16px; font-size: 12px;
+    flex: 1 1 calc(50% - 8px); max-width: calc(50% - 8px);
+  }
+  .tabIcon { font-size: 14px; }
+}
+
+@media (max-width: 360px) {
+  .profileTitle { font-size: 28px; line-height: 36px; }
+  .profileExit { max-width: 130px; font-size: 11px; }
+  .logImg { width: 24px; height: 24px; }
+  .profileExit:hover .logImg { transform: translateX(calc(130px - 43px)); }
+  .profileExit:hover span:last-child { transform: translateX(calc(-100% - 20px)); }
+  .tabBtn { min-width: 140px; padding: 8px 16px; font-size: 12px; }
+  
+  .profileTabs {
+    gap: 6px; margin-bottom: 15px; flex-direction: column; width: 100%;
+  }
+  .tabBtn {
+    min-width: auto; width: 100%; max-width: 100%; flex: 1 1 100%;
+    padding: 10px 20px; font-size: 13px;
+  }
+  
+  .studentCard { padding: 15px 12px; gap: 12px; }
+  .studentAvatar { width: 80px; height: 80px; font-size: 28px; }
+  .studentName { font-size: 20px; margin-bottom: 6px; }
+  .studentDetails { font-size: 13px; }
+  
+  .orderImageContainer { max-width: 90px; min-width: 70px; }
+  .orderImageContainer img { width: 80%; height: 80%; }
+  .productName { font-size: 18px; }
+  .orderPrice { font-size: 20px; }
+  .detailRow { font-size: 12px; gap: 6px; }
+  .detailLabel { min-width: 45px; }
+  .statusBadge { padding: 3px 8px; font-size: 11px; }
+  
+  .profileExit { max-width: 160px; font-size: 11px; }
+  .logImg { width: 24px; height: 24px; }
+  .profileExit:hover .logImg { transform: translateX(calc(160px - 27px)); }
+  .profileExit:hover span:last-child { transform: translateX(calc(-100% - 12px)); }
+  .profileTitle { font-size: 28px; line-height: 36px; }
+}
+
+@media (max-width: 320px) {
+  .tabBtn { padding: 9px 18px; font-size: 12px; }
+  .studentCard { padding: 15px 10px; }
+  .studentAvatar { width: 70px; height: 70px; font-size: 24px; }
+  .studentName { font-size: 18px; }
+  .studentDetails { font-size: 12px; }
+}
