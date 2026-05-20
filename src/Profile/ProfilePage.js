@@ -13,8 +13,6 @@ import { ProfileSkeleton } from '../component/Skeleton'
 function ProfilePage () {
   const [searchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'achievements')
-  const [userInfo, setUserInfo] = useState(null)
-  const [userLevel, setUserLevel] = useState(null)
   const [userAchievements, setUserAchievements] = useState(null)
   const [orders, setOrders] = useState([])
   const [ordersLoading, setOrdersLoading] = useState(true)
@@ -23,6 +21,9 @@ function ProfilePage () {
 
   const { user, loading, updateUser, logout } = useAuth()
   const navigate = useNavigate()
+
+  // 🔥 Получаем актуальные баллы из user.totalPoints (бэкенд/локальное хранилище)
+  const totalPoints = user?.totalPoints || 0
 
   // Загрузка заказов
   useEffect(() => {
@@ -133,7 +134,6 @@ const handleLogout = async () => {
 
   // Определяем статус для каждого уровня
   const getLevelStatus = levelMinPoints => {
-    const totalPoints = user?.total_points || userLevel?.points || 125
     if (totalPoints >= levelMinPoints) {
       return 'completed'
     }
@@ -142,7 +142,6 @@ const handleLogout = async () => {
 
   // Находим текущий уровень
   const getCurrentLevel = () => {
-    const totalPoints = user?.total_points || userLevel?.points || 125
     const sortedLevels = [...allLevels].sort(
       (a, b) => b.min_points - a.min_points
     )
@@ -199,7 +198,26 @@ const handleLogout = async () => {
   const { loaded: orderImagesLoaded } = useImageLoading([...orderImageSources, logo])
 
   const currentLevel = getCurrentLevel()
-  const totalPoints = user?.total_points || userLevel?.points || 125
+
+  // Вспомогательные функции для работы с уровнями
+  const getNextLevelMinPoints = () => {
+    const nextLevel = allLevels.find(level => level.min_points > totalPoints)
+    return nextLevel ? nextLevel.min_points : totalPoints + 100
+  }
+
+  const getPointsToNextLevel = () => {
+    const nextLevelMin = getNextLevelMinPoints()
+    return Math.max(0, nextLevelMin - totalPoints)
+  }
+
+  const getProgressPercentage = () => {
+    const prevLevelMin = currentLevel?.min_points || 0
+    const nextLevelMin = getNextLevelMinPoints()
+    const range = nextLevelMin - prevLevelMin
+    if (range <= 0) return 100
+    const progress = ((totalPoints - prevLevelMin) / range) * 100
+    return Math.min(100, Math.max(0, progress))
+  }
 
   // 🔥 Ждём завершения загрузки: auth + уровни + заказы + изображения
   if (loading || levelsLoading || ordersLoading || !orderImagesLoaded) {
@@ -287,32 +305,16 @@ const handleLogout = async () => {
                   <h3>Мои баллы</h3>
                 </div>
                 <div className='points-total'>
-                  {userLevel?.points || 125}
+                  {totalPoints}
                   <span>баллов</span>
                 </div>
               </div>
 
               <div className='points-details'>
-                <div className='points-item'>
-                  <span className='points-label'>
-                    Активность на мероприятиях
-                  </span>
-                  <span className='points-value'>
-                    +{userLevel?.activity_points || 85} баллов
-                  </span>
-                </div>
-                <div className='points-item'>
-                  <span className='points-label'>
-                    Бонус
-                  </span>
-                  <span className='points-value'>
-                    +{userLevel?.bonus_points || 40} баллов
-                  </span>
-                </div>
                 <div className='points-item total'>
                   <span className='points-label'>Итого</span>
                   <span className='points-value'>
-                    {userLevel?.points || 125} баллов
+                    {totalPoints} баллов
                   </span>
                 </div>
               </div>
@@ -322,10 +324,10 @@ const handleLogout = async () => {
             <div className='level-progress-card'>
               <div className='level-progress-header'>
                 <div className='level-info-left'>
-                  <div className='level-circle'>{userLevel?.level || 2}</div>
+                  <div className='level-circle'>{currentLevel?.id || 1}</div>
                   <div>
-                    <h4 className='level-name'>Львёнок</h4>
-                    <p className='level-range'>50 — 199 баллов</p>
+                    <h4 className='level-name'>{currentLevel?.name || 'Новичок'}</h4>
+                    <p className='level-range'>{currentLevel?.min_points || 0} — {getNextLevelMinPoints() - 1} баллов</p>
                   </div>
                 </div>
                 <div className='level-info-right'>
@@ -333,9 +335,9 @@ const handleLogout = async () => {
                     <svg viewBox='0 0 24 24' fill='currentColor'>
                       <path d='M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z' />
                     </svg>
-                    Уровень 3
+                    Уровень {currentLevel?.id + 1 || 2}
                   </div>
-                  <p className='level-next-value'>от 200 баллов</p>
+                  <p className='level-next-value'>от {getNextLevelMinPoints()} баллов</p>
                 </div>
               </div>
 
@@ -344,17 +346,17 @@ const handleLogout = async () => {
                   <div
                     className='progress-fill'
                     style={{
-                      width: `${((userLevel?.points || 125) / 200) * 100}%`
+                      width: `${getProgressPercentage()}%`
                     }}
                   />
                 </div>
                 <div className='progress-text'>
                   <span className='progress-text-left'>
                     До следующего уровня:{' '}
-                    {userLevel?.points_to_next_level || 75} баллов
+                    {getPointsToNextLevel()} баллов
                   </span>
                   <span className='progress-text-right'>
-                    {userLevel?.points || 125} / 200
+                    {totalPoints} / {getNextLevelMinPoints()}
                   </span>
                 </div>
               </div>

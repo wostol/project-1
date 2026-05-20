@@ -9,7 +9,7 @@ import ConfirmDialog from '../component/ConfirmDialog';
 // Компонент уведомления
 const Notification = ({ notification, onClose }) => {
   const [exiting, setExiting] = useState(false);
-
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setExiting(true);
@@ -51,6 +51,7 @@ function CartPage() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, itemId: null });
+    const [checkoutDialog, setCheckoutDialog] = useState({ isOpen: false, totalPointsCost: 0, remainingPoints: 0 });
   const {user, isAuthenticated } = useAuth();
 
   const userPoints = isAuthenticated && user?.totalPoints ? user.totalPoints : 0;
@@ -92,15 +93,29 @@ function CartPage() {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) {
-      // Открываем диалог подтверждения удаления
-      setDeleteDialog({ isOpen: true, itemId: id });
-      return;
-    }
-    setCartItems(items => {
-      const newItems = items.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
+  const handleDecreaseQuantity = (uuid) => {
+    setCartItems(prevItems => {
+      const item = prevItems.find(i => i.uuid === uuid);
+      if (!item) return prevItems;
+      const currentQty = item.quantity || 1;
+      if (currentQty <= 1) {
+        setDeleteDialog({ isOpen: true, itemId: uuid });
+        return prevItems;
+      }
+      const newItems = prevItems.map(i =>
+        i.uuid === uuid ? { ...i, quantity: currentQty - 1 } : i
+      );
+      localStorage.setItem('cart', JSON.stringify(newItems));
+      const totalItems = newItems.reduce((sum, i) => sum + (i.quantity || 1), 0);
+      updateHeaderBadge(totalItems);
+      return newItems;
+    });
+  };
+
+  const handleIncreaseQuantity = (uuid) => {
+    setCartItems(prevItems => {
+      const newItems = prevItems.map(item =>
+        item.uuid === uuid ? { ...item, quantity: (item.quantity || 1) + 1 } : item
       );
       localStorage.setItem('cart', JSON.stringify(newItems));
       const totalItems = newItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
@@ -111,8 +126,8 @@ function CartPage() {
 
   const confirmDeleteItem = () => {
     if (deleteDialog.itemId) {
-      setCartItems(items => {
-        const newItems = items.filter(item => item.id !== deleteDialog.itemId);
+      setCartItems(prevItems => {
+        const newItems = prevItems.filter(item => item.uuid !== deleteDialog.itemId);
         localStorage.setItem('cart', JSON.stringify(newItems));
         const totalItems = newItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
         updateHeaderBadge(totalItems);
@@ -126,9 +141,9 @@ function CartPage() {
     setDeleteDialog({ isOpen: false, itemId: null });
   };
 
-  const removeItem = (id) => {
-    setCartItems(items => {
-      const newItems = items.filter(item => item.id !== id);
+  const removeItem = (uuid) => {
+    setCartItems(prevItems => {
+      const newItems = prevItems.filter(item => item.uuid !== uuid);
       localStorage.setItem('cart', JSON.stringify(newItems));
       const totalItems = newItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
       updateHeaderBadge(totalItems);
@@ -155,37 +170,45 @@ function CartPage() {
       alert(`Недостаточно баллов!\nНужно: ${totalPointsCost} баллов\nУ вас: ${userPoints} баллов\nНе хватает: ${missingPoints} баллов`);
       return;
     }
+setCheckoutDialog({
+      isOpen: true,
+      totalPointsCost,
+      remainingPoints: userPoints - totalPointsCost
+    });
+  };
 
-    if (window.confirm(`Оплатить заказ на сумму ${totalPointsCost} баллов?\nПосле оплаты у вас останется: ${userPoints - totalPointsCost} баллов`)) {
-      setCheckoutLoading(true);
+  const confirmCheckout = async () => {
+    setCheckoutLoading(true);
+    setCheckoutDialog({ isOpen: false, totalPointsCost: 0, remainingPoints: 0 });
 
-      try {
-        // Формируем заказ - бэкенд ожидает объект { productUuids: [...] }
-        const productUuids = cartItems.map(item => item.uuid || item.id);
+    try {
+      const productUuids = cartItems.map(item => item.uuid || item.id);
 
-        // Отправляем POST запрос на /shop/orders
-        await apiRequest('/shop/orders', {
-          method: 'POST',
-          body: JSON.stringify({ productUuids })
-        });
+      // Отправляем POST запрос на /shop/orders
+      await apiRequest('/shop/orders', {
+        method: 'POST',
+        body: JSON.stringify({ productUuids })
+      });
 
-        // Очищаем корзину после успешного заказа
-        setCartItems([]);
-        localStorage.setItem('cart', '[]');
-        updateHeaderBadge(0);
+      // Очищаем корзину после успешного заказа
+      setCartItems([]);
+      localStorage.setItem('cart', '[]');
+      updateHeaderBadge(0);
 
-        // Показываем уведомление об успехе
-        addNotification('Заказ оформлен!', 'Ваш заказ успешно оформлен и будет обработан в ближайшее время.');
-      } catch (error) {
-        console.error('Ошибка при оформлении заказа:', error);
-        alert(`Ошибка при оформлении заказа: ${error.message}`);
-      } finally {
-        setCheckoutLoading(false);
-      }
+      // Показываем уведомление об успехе
+      addNotification('Заказ оформлен!', 'Ваш заказ успешно оформлен и будет обработан в ближайшее время.');
+    } catch (error) {
+      console.error('Ошибка при оформлении заказа:', error);
+      alert(`Ошибка при оформлении заказа: ${error.message}`);
+    } finally {
+      setCheckoutLoading(false);
     }
   };
 
-  const totalPointsCost = cartItems.reduce((sum, item) =>
+  const cancelCheckout = () => {
+    setCheckoutDialog({ isOpen: false, totalPointsCost: 0, remainingPoints: 0 });
+  };
+    const totalPointsCost = cartItems.reduce((sum, item) =>
     sum + ((item.pricePoints || item.price || 0) * (item.quantity || 1)), 0);
   const canAfford = userPoints >= totalPointsCost;
 
@@ -222,14 +245,14 @@ function CartPage() {
       ) : (
         <div className={styles.cartContainer}>
           <div className={styles.cartItems}>
-            <h2>Товары ({cartItems.length})</h2>
+            <h2>Товары ({cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0)} шт.)</h2>
             {cartItems.map(item => (
-              <div key={item.id} className={styles.cartItem}>
+              <div key={item.uuid} className={styles.cartItem}>
                 <div className={styles.cartItemImage}>
                   {item.image ? (
                     <img src={item.image} alt={item.name || item.title} />
                   ) : (
-                    <div className={styles.imagePlaceholder}>🛒</div>
+                    <div className={styles.imagePlaceholder}></div>
                   )}
                 </div>
                 <div className={styles.cartItemDetails}>
@@ -251,15 +274,15 @@ function CartPage() {
                 </div>
                 <div className={styles.cartItemActions}>
                   <div className={styles.cartQuantity}>
-                    <button className={styles.quantityBtn} onClick={() => updateQuantity(item.id, (item.quantity || 1) - 1)}>-</button>
+                    <button className={styles.quantityBtn} onClick={() => handleDecreaseQuantity(item.uuid)}>-</button>
                     <span className={styles.quantityValue}>{item.quantity || 1}</span>
-                    <button className={styles.quantityBtn} onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}>+</button>
+                    <button className={styles.quantityBtn} onClick={() => handleIncreaseQuantity(item.uuid)}>+</button>
                   </div>
                   <div className={styles.cartItemTotal}>
                     {(item.pricePoints || item.price || 0) * (item.quantity || 1)} баллов
                   </div>
-                  <button className={styles.removeBtn} onClick={() => removeItem(item.id)}>
-                    <span>🗑️</span> Удалить
+                  <button className={styles.removeBtn} onClick={() => removeItem(item.uuid)}>
+                    Удалить
                   </button>
                 </div>
               </div>
@@ -321,7 +344,7 @@ function CartPage() {
             </button>
 
             <div className={styles.pointsNote}>
-              <p>💡 Все товары приобретаются за баллы. Баллы можно заработать, выполняя задания и участвуя в активностях.</p>
+              <p>Все товары приобретаются за баллы. Баллы можно заработать, выполняя задания и участвуя в активностях.</p>
             </div>
 
             <div className={styles.cartActions}>
@@ -341,6 +364,15 @@ function CartPage() {
         onConfirm={confirmDeleteItem}
         onCancel={cancelDeleteItem}
         confirmText="Удалить"
+        cancelText="Отмена"
+      />
+            <ConfirmDialog
+        isOpen={checkoutDialog.isOpen}
+        title="Подтверждение оплаты"
+        message={`Оплатить заказ на сумму ${checkoutDialog.totalPointsCost} баллов?\nПосле оплаты у вас останется: ${checkoutDialog.remainingPoints} баллов`}
+        onConfirm={confirmCheckout}
+        onCancel={cancelCheckout}
+        confirmText="Оплатить"
         cancelText="Отмена"
       />
 
