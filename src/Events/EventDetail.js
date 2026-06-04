@@ -10,6 +10,7 @@ import { useImageLoading } from '../hooks/useLoading';
 import { EventDetailSkeleton } from '../component/Skeleton';
 import './EventDetail.css';
 import logo from '../image/lionsib.svg';
+
 const calculateDuration = (start, end) => {
   if (!start || !end) return '';
   const diffMs = new Date(end) - new Date(start);
@@ -17,6 +18,7 @@ const calculateDuration = (start, end) => {
   const minutes = Math.round((diffMs % (1000 * 60 * 60)) / (1000 * 60));
   return minutes === 0 ? `${hours} ч.` : `${hours} ч. ${minutes} мин.`;
 };
+
 const pluralize = (count, one, few, many) => {
   const mod10 = count % 10;
   const mod100 = count % 100;
@@ -25,54 +27,51 @@ const pluralize = (count, one, few, many) => {
   if (mod10 >= 2 && mod10 <= 4) return few;
   return many;
 };
+
 const EventDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  
   const event = useSelectedEvent();
   const eventLoading = useEventLoading();
   const error = useEventError();
+  
+  // Получаем действия из стора
   const fetchEventById = useEventStore((state) => state.fetchEventById);
   const clearSelectedEvent = useEventStore((state) => state.clearSelectedEvent);
   const registerForEvent = useEventStore((state) => state.registerForEvent);
+  
   const isAuthenticated = useIsAuthenticated();
+  
   const [registrationType, setRegistrationType] = useState('participant');
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [registrationError, setRegistrationError] = useState(null);
   const [isCheckingRegistration, setIsCheckingRegistration] = useState(true);
-
-  // Предзагрузка логотипа
+  
   const { loaded: logoLoaded } = useImageLoading([logo]);
-
-  // 🔥 Отслеживаем завершение загрузки данных события (не только загрузку из стора)
   const [dataReady, setDataReady] = useState(false);
 
-  // 🔄 Синхронизация роли при загрузке данных из стора
- useEffect(() => {
-    console.log('[EventDetail] useEffect check:', {
-      eventExists: !!event,
-      loading: eventLoading,
-      isRegistered: event?.isRegistered,
-      hasRole: !!event?.userRegistration?.role
-    });
-
-    // 🔹 ИСПРАВЛЕНИЕ: Завершаем проверку ТОЛЬКО когда событие загружено И статус регистрации определен (true/false)
+  // 🔥 Оптимизированный useEffect: зависит только от примитивных значений, чтобы избежать ложных срабатываний при новой ссылке на объект event
+  useEffect(() => {
     if (event && !eventLoading && event.isRegistered !== undefined && event.isRegistered !== null) {
-      console.log('[EventDetail] Registration status loaded:', event.isRegistered);
       if (event.isRegistered && event.userRegistration?.role) {
         setRegistrationType(event.userRegistration.role === 'fan' ? 'fan' : 'participant');
       }
       setIsCheckingRegistration(false);
-      setDataReady(true); // ← Данные готовы
+      setDataReady(true);
     }
-  }, [event?.isRegistered, event?.userRegistration, event, eventLoading]);
+  }, [event?.isRegistered, event?.userRegistration?.role, eventLoading]);
 
-  // 📥 Загрузка события
+  // 🔥 Загрузка события при монтировании
   useEffect(() => {
-    if (id) fetchEventById(id);
-    return () => clearSelectedEvent();
+    if (id) {
+      fetchEventById(id);
+    }
+    return () => {
+      clearSelectedEvent();
+    };
   }, [id, fetchEventById, clearSelectedEvent]);
 
-  // 📅 Форматирование
   const formatDate = (dateString) => {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('ru-RU', {
@@ -85,7 +84,6 @@ const EventDetail = () => {
     return new Date(dateString).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   };
 
-  // 🧮 Вычисляемые значения
   const duration = useMemo(() =>
     calculateDuration(event?.startDate, event?.endDate),
     [event?.startDate, event?.endDate]
@@ -98,29 +96,22 @@ const EventDetail = () => {
       const current = event.currentParticipants || 0;
       return Math.max(0, max - current);
     }
-    // Болельщики: условный лимит
     return Math.max(0, 1000 - (event.currentFans || 0));
   };
 
   const availableParticipants = calculateAvailableSpots('participant');
-
-  //Регистрация доступна только если пользователь ещё не зарегистрирован
   const canRegisterAsParticipant = availableParticipants > 0 && !event?.isRegistered;
   const canRegisterAsSpectator = !event?.isRegistered;
-
+  
   const rewardPoints = registrationType === 'participant'
     ? event?.participantPoints ?? 0
     : event?.fanPoints ?? 0;
 
-  // 📤 Обработчик регистрации с проверкой авторизации
   const handleRegister = async () => {
-    // 🔹 ПРОВЕРКА: Если не авторизован, перенаправляем на вход
     if (!isAuthenticated) {
-      // Можно сохранить текущий URL, чтобы вернуться после логина
       navigate('/login', { state: { from: `/event/${id}` } });
       return;
     }
-
     try {
       setRegistrationError(null);
       await registerForEvent(id, registrationType);
@@ -131,12 +122,10 @@ const EventDetail = () => {
     }
   };
 
-  // ⏳ Loading
   if (eventLoading) {
     return <EventDetailSkeleton />;
   }
 
-  // ❌ Error / Not Found
   if (error || !event) {
     return (
       <div className="error-container">
@@ -148,19 +137,16 @@ const EventDetail = () => {
     );
   }
 
-  // ✅ Основной рендер
   return (
     <div className='event-detail'>
-      {/* Кнопка назад */}
       <button onClick={() => navigate('/')} className='back-btn'>
         <svg width='20' height='20' viewBox='0 0 24 24' fill='currentColor'>
           <path d='M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z' />
         </svg>
         Назад к мероприятиям
       </button>
-
+      
       <div className="event-detail-container">
-
         <div className='event-detail-header'>
           <h1 className='event-detail-title'>{event.title}</h1>
           <div className='event-header-logo'>
@@ -175,17 +161,17 @@ const EventDetail = () => {
             <div className="event-date-location">
               <div className="date-time">
                 <svg className="icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 6v2h14V6H5z"/>
+                  <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 6v2h14V6H5z" />
                 </svg>
                 <div>
                   <div className="date">{formatDate(event.startDate)}</div>
-                  <div className="time">{formatTime(event.startDate)} • {event.duration}</div>
+                  <div className="time">{formatTime(event.startDate)} • {event.duration || duration}</div>
                 </div>
               </div>
 
               <div className="location">
                 <svg className="icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                 </svg>
                 <div>
                   <div className="address">{event.location || 'Адрес не указан'}</div>
@@ -233,13 +219,13 @@ const EventDetail = () => {
               <div className="contacts-info">
                 <a href={event.contactEmail ? `mailto:${event.contactEmail}` : '#'} className="contact-link">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z"/>
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z" />
                   </svg>
                   {event.contactEmail || 'Не указан'}
                 </a>
                 <a href={event.contactPhone ? `tel:${event.contactPhone}` : '#'} className="contact-link">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
                   </svg>
                   {event.contactPhone || 'Не указан'}
                 </a>
@@ -251,14 +237,14 @@ const EventDetail = () => {
             <div className="registration-card">
               <h3>Регистрация</h3>
 
-                {(isCheckingRegistration) ? (
+              {isCheckingRegistration ? (
                 <div className="registration-success">
                   <p>Проверка статуса регистрации...</p>
                 </div>
               ) : event?.isRegistered ? (
                 <div className="registration-success">
                   <svg width="48" height="48" viewBox="0 0 24 24" fill="#28a745">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                   </svg>
                   <h4>Вы успешно зарегистрированы!</h4>
                   <p>Роль: {event.userRegistration?.role === 'fan' ? 'Болельщик' : 'Участник'}</p>
@@ -274,11 +260,10 @@ const EventDetail = () => {
                         disabled={!canRegisterAsParticipant}
                       >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                         </svg>
                         <span>
-                          Участник {availableParticipants > 0 &&
-                            `(${availableParticipants} ${pluralize(availableParticipants, 'место', 'места', 'мест')})`}
+                          Участник {availableParticipants > 0 && `(${availableParticipants} ${pluralize(availableParticipants, 'место', 'места', 'мест')})`}
                         </span>
                       </button>
 
@@ -288,7 +273,7 @@ const EventDetail = () => {
                         disabled={!canRegisterAsSpectator}
                       >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M18 13v7H4V6h5.02c.05-.71.22-1.38.48-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-5l-2-2zM16 21H6v-1h10v1zm3.5-8.5L21 13l-7 7-4.5-4.5L10 14l3 3 5.5-5.5z"/>
+                          <path d="M18 13v7H4V6h5.02c.05-.71.22-1.38.48-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-5l-2-2zM16 21H6v-1h10v1zm3.5-8.5L21 13l-7 7-4.5-4.5L10 14l3 3 5.5-5.5z" />
                         </svg>
                         <span>Болельщик</span>
                       </button>
@@ -319,7 +304,6 @@ const EventDetail = () => {
                     </div>
                   </div>
 
-                  {/* 🔹 Кнопка с проверкой авторизации */}
                   <button
                     onClick={handleRegister}
                     className={`register-btn ${!isAuthenticated ? 'disabled-login' : ''}`}

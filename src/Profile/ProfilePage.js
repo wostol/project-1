@@ -18,8 +18,6 @@ function ProfilePage () {
 
   const { user, loading, updateUser, logout } = useAuth()
   const navigate = useNavigate()
-
-  // 🔥 Получаем актуальные баллы из user.totalPoints (бэкенд/локальное хранилище)
   const totalPoints = user?.totalPoints || 0
 
   // Загрузка заказов
@@ -39,7 +37,6 @@ function ProfilePage () {
     fetchOrders()
   }, [])
 
-  // Загрузка всех уровней из БД
   useEffect(() => {
     const fetchLevels = async () => {
       try {
@@ -47,49 +44,10 @@ function ProfilePage () {
         setAllLevels(data)
       } catch (error) {
         console.error('Ошибка загрузки уровней:', error)
-        // Fallback данные если API не доступен
-        setAllLevels([
-          {
-            id: 1,
-            name: 'Новичок',
-            min_points: 0,
-            description: 'Начальный этап. Добро пожаловать в клуб!',
-            color: '#003466'
-          },
-          {
-            id: 2,
-            name: 'Львенок',
-            min_points: 50,
-            description: 'Вы делаете первые шаги. Продолжайте в том же духе!',
-            color: '#28a745'
-          },
-          {
-            id: 3,
-            name: 'Хищник',
-            min_points: 200,
-            description: 'Эксклюзивные мероприятия и приоритетная запись.',
-            color: '#0056b3'
-          },
-          {
-            id: 4,
-            name: 'Царь зверей',
-            min_points: 500,
-            description: 'Максимальные привилегии и доступ ко всем событиям.',
-            color: '#FFD700'
-          },
-          {
-            id: 5,
-            name: 'Легенда',
-            min_points: 1000,
-            description: 'Высший уровень. Непревзойдённая активность.',
-            color: '#FF6B6B'
-          }
-        ])
       } finally {
-        setLevelsLoading(false) // ← Завершаем загрузку уровней
+        setLevelsLoading(false)
       }
     }
-
     fetchLevels()
   }, [])
 
@@ -102,17 +60,13 @@ function ProfilePage () {
 
   const handleLogout = async () => {
   try {
-    // 1. Ждём завершения очистки localStorage и запроса к серверу
     await logout();
     navigate('/', { replace: true });
   } catch (error) {
     console.error('Ошибка при выходе:', error);
-    // Даже при ошибке переходим на главную, так как локальная очистка уже прошла
     navigate('/', { replace: true });
   }
 };
-
-  // ИЗВЛЕКАЕМ ДАННЫЕ ПОЛЬЗОВАТЕЛЯ
   const userFullName =
     user?.lastName && user?.firstName && user?.middleName
       ? `${user.lastName} ${user.firstName} ${user.middleName}`
@@ -129,7 +83,6 @@ function ProfilePage () {
     ? 'ИШИТР'
     : userInstitute
 
-  // Определяем статус для каждого уровня
   const getLevelStatus = levelMinPoints => {
     if (totalPoints >= levelMinPoints) {
       return 'completed';
@@ -238,12 +191,12 @@ function ProfilePage () {
       </header>
 
       <div className='profile-tabs'>
-        <button
+        {/* <button
           className={`tab-btn ${activeTab === 'notifications' ? 'active' : ''}`}
           onClick={() => setActiveTab('notifications')}
         >
           Уведомления
-        </button>
+        </button> */}
 
         <button
           className={`tab-btn ${activeTab === 'points' ? 'active' : ''}`}

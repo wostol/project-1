@@ -1,31 +1,29 @@
 import { create } from 'zustand';
-import authService from '../authService';
 import { apiRequest } from '../auth/apiClient';
 
 const normalizeEvent = (raw) => {
   if (!raw) return null;
-
+  
   const start = new Date(raw.startDate);
   const end = new Date(raw.endDate);
   const durationMs = end - start;
   const hours = Math.floor(durationMs / (1000 * 60 * 60));
   const minutes = Math.round((durationMs % (1000 * 60 * 60)) / (1000 * 60));
   const duration = minutes > 0 ? `${hours} ч. ${minutes} мин.` : `${hours} ч.`;
-
+  
   const reg = raw.userRegistration || {};
 
   return {
-    id: raw.uuid,
+    // 🔥 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Fallback на raw.id, если uuid отсутствует
+    id: raw.uuid || raw.id, 
     title: raw.title,
     description: raw.description || '',
     fullDescription: raw.fullDescription || raw.description || '',
-
-    // 🎯 Ключевые поля
+    
     myRole: raw.myRole || raw.registrationType || reg.role || 'participant',
     registeredAt: raw.registeredAt || reg.registeredAt || raw.createdAt || null,
     teamName: raw.teamName || reg.teamName || null,
 
-    // 📊 Основные данные
     startDate: raw.startDate,
     endDate: raw.endDate,
     duration,
@@ -37,7 +35,6 @@ const normalizeEvent = (raw) => {
     currentParticipants: raw.currentParticipants || 0,
     currentFans: raw.currentFans || 0,
 
-    // 🛡️ Статус регистрации: приоритет прямого флага, fallback на объект
     isRegistered: Boolean(raw.isRegistered || reg.status),
     userRegistration: reg,
 
@@ -45,7 +42,6 @@ const normalizeEvent = (raw) => {
     eventType: raw.eventType || 'event',
     registrationDeadline: raw.registrationDeadline || null,
 
-    // 🛡️ Дефолты
     level: raw.level || 'Не указан',
     price: raw.price ?? 0,
     requirements: raw.requirements || 'Не указаны',
@@ -67,10 +63,8 @@ const useEventStore = create((set, get) => ({
   fetchEvents: async () => {
     set({ loading: true, error: null });
     try {
-      const data = await apiRequest('/events', {
-        method: 'GET',
-      });
-      const normalized = Array.isArray(data) ? data.map(normalizeEvent) : [];
+      const data = await apiRequest('/events', { method: 'GET' });
+      const normalized = Array.isArray(data) ? data.map(normalizeEvent).filter(Boolean) : [];
       set({ events: normalized, loading: false });
       return normalized;
     } catch (error) {
@@ -79,22 +73,13 @@ const useEventStore = create((set, get) => ({
     }
   },
 
-  // ✅ Загрузка мероприятий пользователя с ПОЛНЫМИ данными
   fetchMyEvents: async () => {
     set({ loading: true, error: null });
     try {
-      // Сначала загружаем все мероприятия
-      const data = await apiRequest('/events', {
-        method: 'GET',
-      });
-
-      // Фильтруем только зарегистрированные мероприятия
+      const data = await apiRequest('/events', { method: 'GET' });
       const registeredEvents = Array.isArray(data) ? data.filter(e => e.isRegistered) : [];
+      const normalized = registeredEvents.map(normalizeEvent).filter(Boolean);
 
-      // Нормализуем и загружаем полные детали для каждого события
-      const normalized = registeredEvents.map(normalizeEvent);
-
-      // Загружаем полные детали для каждого события, чтобы получить все поля
       const fullEvents = await Promise.all(
         normalized.map(async (event) => {
           try {
@@ -115,22 +100,35 @@ const useEventStore = create((set, get) => ({
     }
   },
 
-  // ✅ Прямой запрос без Servisedetail.js + безопасное слияние
   fetchEventById: async (id, skipLoadingState = false) => {
-    if (!skipLoadingState) {
-      set({ loading: true, error: null });
+     if (!id) {
+    console.error('[eventStore] fetchEventById called without id');
+    return null;
+  }
+  
+  if (!skipLoadingState) {
+    set({ loading: true, error: null });
+  }
+  
+  try {
+    const rawData = await apiRequest(`/events/${id}`, {
+      method: 'GET',
+    });
+    
+    const normalized = normalizeEvent(rawData);
+
+    // 🔥 ЗАЩИТА: если ID нет, не продолжаем
+    if (!normalized || !normalized.id) {
+      console.error('[eventStore] Event has no ID:', rawData);
+      if (!skipLoadingState) {
+        set({ loading: false, error: 'Invalid event data', selectedEvent: null });
+      }
+      return null;
     }
-    try {
-      const rawData = await apiRequest(`/events/${id}`, {
-        method: 'GET',
-      });
 
-      const normalized = normalizeEvent(rawData);
+    set((state) => {
+      const existingIndex = state.events.findIndex(e => e.id === normalized.id);
 
-      set((state) => {
-        const existingIndex = state.events.findIndex(e => e.id === normalized.id);
-
-        // 🔄 Слияние: старые данные + новые. Флаги из списка не теряются.
         const mergedEvent = existingIndex !== -1
           ? { ...state.events[existingIndex], ...normalized }
           : normalized;
@@ -156,29 +154,27 @@ const useEventStore = create((set, get) => ({
   },
 
   fetchEventDetailsOnly: async (id) => get().fetchEventById(id),
-  getEventFromList: (id) => {
-    const { events } = get();
-    return events.find((e) => e.id === parseInt(id)) || null;
-  },
-  updateEvent: (id, updates) => {
-    set((state) => ({
-      events: state.events.map((e) => (e.id === parseInt(id) ? { ...e, ...updates } : e)),
-      selectedEvent: state.selectedEvent?.id === parseInt(id)
-        ? { ...state.selectedEvent, ...updates }
-        : state.selectedEvent,
-    }));
-  },
+  
+getEventFromList: (id) => {
+  const { events } = get();
+  return events.find((e) => e.id === id) || null;
+},
 
-  // 🔥 Регистрация с реактивным обновлением токена при 401
+updateEvent: (id, updates) => {
+  set((state) => ({
+    events: state.events.map((e) => (e.id === id ? { ...e, ...updates } : e)),
+    selectedEvent: state.selectedEvent?.id === id
+      ? { ...state.selectedEvent, ...updates }
+      : state.selectedEvent,
+  }));
+},
+
   registerForEvent: async (eventId, registrationType) => {
     set({ loading: true, error: null });
     try {
       const result = await apiRequest(`/events/${eventId}/register`, {
         method: 'POST',
-        body: JSON.stringify({
-          eventId: eventId,
-          registrationType: registrationType,
-        }),
+        body: JSON.stringify({ eventId, registrationType }),
       });
       await get().fetchEventById(eventId);
       set({ loading: false });
@@ -193,9 +189,7 @@ const useEventStore = create((set, get) => ({
   unsubscribeFromEvent: async (eventId) => {
     set({ loading: true, error: null });
     try {
-      const result = await apiRequest(`/events/${eventId}/unregister`, {
-        method: 'DELETE',
-      });
+      await apiRequest(`/events/${eventId}/unregister`, { method: 'DELETE' });
       set((state) => ({
         events: state.events.filter((e) => e.id !== eventId),
         selectedEvent: state.selectedEvent?.id === eventId ? null : state.selectedEvent,
@@ -208,7 +202,9 @@ const useEventStore = create((set, get) => ({
       throw error;
     }
   },
-  clearSelectedEvent: () => set({ selectedEvent: null }),
+
+  // 🔥 Полная очистка состояния при уходе со страницы
+  clearSelectedEvent: () => set({ selectedEvent: null, error: null, loading: false }),
   clearError: () => set({ error: null }),
 }));
 

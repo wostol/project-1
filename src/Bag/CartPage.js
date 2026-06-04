@@ -178,32 +178,49 @@ setCheckoutDialog({
   };
 
   const confirmCheckout = async () => {
-    setCheckoutLoading(true);
-    setCheckoutDialog({ isOpen: false, totalPointsCost: 0, remainingPoints: 0 });
+  setCheckoutLoading(true);
+  setCheckoutDialog({ isOpen: false, totalPointsCost: 0, remainingPoints: 0 });
 
-    try {
-      const productUuids = cartItems.map(item => item.uuid || item.id);
-
-      // Отправляем POST запрос на /shop/orders
-      await apiRequest('/shop/orders', {
-        method: 'POST',
-        body: JSON.stringify({ productUuids })
-      });
-
-      // Очищаем корзину после успешного заказа
-      setCartItems([]);
-      localStorage.setItem('cart', '[]');
-      updateHeaderBadge(0);
-
-      // Показываем уведомление об успехе
-      addNotification('Заказ оформлен!', 'Ваш заказ успешно оформлен и будет обработан в ближайшее время.');
-    } catch (error) {
-      console.error('Ошибка при оформлении заказа:', error);
-      alert(`Ошибка при оформлении заказа: ${error.message}`);
-    } finally {
-      setCheckoutLoading(false);
+  try {
+    // 🔹 Проверка: не пустая ли корзина
+    if (!cartItems || cartItems.length === 0) {
+      throw new Error('Корзина пуста');
     }
-  };
+
+    // 🔹 Формируем items в ПРАВИЛЬНОМ формате: [{ item: "uuid", count: N }]
+    const items = cartItems.map(cartItem => ({
+      item: cartItem.uuid || cartItem.id,              // 🔥 Ключ 'item', значение — строка UUID
+      count: cartItem.count || cartItem.quantity || 1  // 🔥 Положительное число
+    }));
+
+    // 🔹 Валидация: count должен быть > 0
+    const invalidItems = items.filter(i => !i.item || i.count <= 0);
+    if (invalidItems.length > 0) {
+      throw new Error('Некорректные данные в корзине');
+    }
+
+    // 🔹 Логируем для отладки
+    console.log('[Checkout] Sending payload:', { items });
+
+    await apiRequest('/shop/orders', {
+      method: 'POST',
+      body: JSON.stringify({ items })  // 🔥 Отправляем { items: [...] }
+    });
+
+    // ✅ Очищаем корзину после успешного заказа
+    setCartItems([]);
+    localStorage.setItem('cart', '[]');
+    updateHeaderBadge(0);
+
+    addNotification('Заказ оформлен!', 'Ваш заказ успешно оформлен и будет обработан в ближайшее время.');
+    
+  } catch (error) {
+    console.error('❌ Ошибка при оформлении заказа:', error);
+    alert(`Ошибка при оформлении заказа: ${error.message}`);
+  } finally {
+    setCheckoutLoading(false);
+  }
+};
 
   const cancelCheckout = () => {
     setCheckoutDialog({ isOpen: false, totalPointsCost: 0, remainingPoints: 0 });

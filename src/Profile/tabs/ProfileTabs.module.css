@@ -272,7 +272,6 @@
   align-items: center;
   gap: 8px;
   padding: 8px 20px;
-  background: linear-gradient(135deg, #003466, #0056b3);
   color: white;
   border-radius: 25px;
   font-family: 'Kontora';
@@ -392,7 +391,6 @@
 .levelCircle {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #003466, #0056b3);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -402,6 +400,7 @@
   font-size: 20px;
   font-weight: 700;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .levelName {
@@ -461,7 +460,6 @@
 
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-grad-first), var(--color-success));
   border-radius: 10px;
   transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -471,10 +469,7 @@
 .progressFill::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   animation: shimmer 2s infinite;
 }
@@ -530,12 +525,12 @@
 .infoCardIcon {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #003466, #0056b3);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  color: white;
 }
 
 .infoCardIcon svg {
@@ -588,15 +583,174 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #29BE46;
   flex-shrink: 0;
-  box-shadow: 0 0 8px rgba(41, 190, 70, 0.5);
+  box-shadow: 0 0 8px currentColor;
 }
 
 .privilegeCheck svg {
   width: 12px;
   height: 12px;
   color: white;
+}
+
+/* ===== БОНУСЫ ПО ФИЗРЕ (PE CARD) ===== */
+.peCard {
+  border-color: rgba(0, 52, 102, 0.1);
+  transition: border-color 0.3s ease;
+}
+
+.peContent {
+  background: #f8f9fa;
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 16px;
+  border: 1px solid rgba(0, 52, 102, 0.1);
+}
+
+.bonusRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 52, 102, 0.06);
+}
+
+.levelBadgeSmall {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-family: 'Kontora';
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.bonusValue {
+  font-family: 'Kontora';
+  font-size: clamp(14px, 2vw, 16px);
+  color: #495057;
+}
+
+.bonusPercent {
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.peHeroBlock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  margin-bottom: 16px;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 52, 102, 0.1);
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.peHeroLabel {
+  font-family: 'Kontora';
+  font-size: 13px;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.peHeroValue {
+  font-family: 'Kontora';
+  font-size: clamp(32px, 6vw, 42px);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.peHeroUnit {
+  font-family: 'Kontora';
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.peHeroSide {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.peHeroSideItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Kontora';
+  font-size: 13px;
+  color: #495057;
+}
+
+.peHeroSideItem svg {
+  width: 14px;
+  height: 14px;
+  color: #28be46;
+}
+
+.peRegulationList {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(0, 52, 102, 0.1);
+  position: relative;
+}
+
+.peRegulationList h5 {
+  font-family: 'Kontora';
+  font-size: 13px;
+  color: #003466;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+
+.peRegulationList ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+}
+
+.peRegulationList li {
+  font-family: 'Kontora';
+  font-size: 13px;
+  color: #495057;
+  line-height: 1.5;
+  padding-left: 18px;
+  position: relative;
+}
+
+.peDisclaimer {
+  font-family: 'Kontora';
+  font-size: 12px;
+  color: #856404;
+  background: #fff8e1;
+  border-left: 3px solid #ffc107;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.peDisclaimer strong {
+  color: #6b4e00;
 }
 
 /* ===== ДОСТИЖЕНИЯ & УРОВНИ ===== */
@@ -1249,17 +1403,17 @@
   .profileExit:hover .logImg { transform: translateX(calc(180px - 43px)); }
   .profileExit:hover span:last-child { transform: translateX(calc(-100% - 20px)); }
   .profileTitle { font-size: 45px; line-height: 60px; }
-  
+
   .studentCard { padding: 20px; gap: 20px; }
   .studentAvatar { width: 90px; height: 90px; font-size: 32px; }
   .studentName { font-size: 28px; }
   .studentDetails { font-size: 16px; }
-  
+
   .profileTabs { gap: 14px; padding-left: 0; }
   .tabBtn { min-width: 160px; padding: 11px 25px; font-size: 14px; }
-  
+
   .pointsInfoGrid { grid-template-columns: 1fr; }
-  
+
   .orderCard {
     grid-template-columns: minmax(80px, 120px) 1fr auto;
     gap: clamp(12px, 2vw, 20px);
@@ -1275,16 +1429,16 @@
   .logImg { width: 32px; height: 32px; }
   .profileExit:hover .logImg { transform: translateX(calc(160px - 43px)); }
   .profileExit:hover span:last-child { transform: translateX(calc(-100% - 20px)); }
-  
+
   .studentCard { padding: 20px; gap: 15px; }
   .studentAvatar { width: 80px; height: 80px; font-size: 28px; }
   .studentName { font-size: 24px; margin-bottom: 6px; }
   .studentDetails { font-size: 15px; }
-  
+
   .profileTabs { gap: 12px; margin-bottom: 25px; justify-content: center; padding-left: 0; }
   .tabBtn { min-width: 150px; padding: 10px 22px; font-size: 14px; }
   .tabIcon { font-size: 16px; }
-  
+
   .pointsCard, .levelProgressCard, .infoCard { padding: 25px 20px; }
   .pointsHeader { flex-direction: column; align-items: flex-start; gap: 20px; }
   .pointsTotal { width: 100%; text-align: right; }
@@ -1293,14 +1447,14 @@
   .levelNextLabel { justify-content: flex-start; }
   .pointsItem { padding: 15px 0; }
   .progressBar { height: 10px; }
-  
+
   .levelsSection { padding: 25px 20px; }
   .levelItem { gap: 15px; }
   .levelItem:hover { margin: 0 -20px; padding: 20px 20px; }
   .levelItem .levelCircle { width: 45px; height: 45px; font-size: 18px; }
   .levelHeader { gap: 10px; }
   .levelName { font-size: 18px; }
-  
+
   .orderCard {
     grid-template-columns: minmax(70px, 90px) 1fr;
     gap: clamp(10px, 1.5vw, 16px);
@@ -1312,7 +1466,7 @@
   .orderCard:hover { margin: 0 -20px; padding: clamp(16px, 2.5vw, 20px) clamp(16px, 2.5vw, 20px); }
   .detailRow { gap: clamp(6px, 1.2vw, 10px); }
   .detailLabel { min-width: 50px; }
-  
+
   .statsOverview { grid-template-columns: 1fr; }
   .statCardModern { padding: 20px; }
   .statCardIcon { width: 56px; height: 56px; }
@@ -1335,19 +1489,19 @@
   .profileExit:hover span:last-child { transform: translateX(calc(-100% - 20px)); }
   .profileTabs { justify-content: center; }
   .tabBtn { min-width: 150px; padding: 10px 20px; font-size: 13px; }
-  
+
   .studentCard { flex-direction: column; text-align: center; padding: 20px 15px; gap: 15px; }
   .studentAvatar { width: 100px; height: 100px; font-size: 36px; margin: 0 auto; }
   .studentInfo { width: 100%; }
   .studentName { font-size: 22px; margin-bottom: 8px; }
   .studentDetails { font-size: 14px; line-height: 1.5; }
-  
+
   .profileTabs { gap: 10px; margin-bottom: 20px; justify-content: center; padding-left: 0; }
   .tabBtn {
     min-width: 140px; padding: 9px 18px; font-size: 13px;
     flex: 1 1 calc(50% - 10px); max-width: calc(50% - 10px);
   }
-  
+
   .pointsCard, .levelProgressCard, .infoCard { padding: 20px 15px; border-radius: 16px; }
   .userLevel { padding: 6px 16px; }
   .levelItem .levelCircle { width: 45px; height: 45px; font-size: 18px; }
@@ -1355,7 +1509,7 @@
   .infoCardHeader { gap: 10px; }
   .infoCardIcon { width: 28px; height: 28px; }
   .infoCardIcon svg { width: 16px; height: 16px; }
-  
+
   .levelsSection { padding: 20px 15px; border-radius: 16px; }
   .levelItem { padding: 15px 0; }
   .levelItem:hover { margin: 0 -15px; padding: 15px 15px; }
@@ -1364,7 +1518,7 @@
   .levelPoints { font-size: 14px; }
   .levelDescription { font-size: 13px; }
   .levelBadge { font-size: 10px; padding: 3px 10px; }
-  
+
   .orderCard { grid-template-columns: 1fr; text-align: center; gap: clamp(12px, 2vw, 16px); }
   .orderImageContainer { margin: 0 auto; max-width: 110px; min-width: 90px; width: 100%; }
   .orderInfoContainer { text-align: center; }
@@ -1374,7 +1528,7 @@
   .statusBadge { white-space: normal; display: inline-block; }
   .orderCard:hover { margin: 0 -15px; padding: clamp(14px, 2vw, 18px) clamp(14px, 2vw, 18px); }
   .orderPrice { font-size: clamp(22px, 4vw, 26px); display: inline-block; }
-  
+
   .statsMainTitle { font-size: 24px; }
   .statValueLarge { font-size: 28px; }
   .placeValue { font-size: 36px; }
@@ -1400,7 +1554,7 @@
   .profileExit:hover .logImg { transform: translateX(calc(130px - 43px)); }
   .profileExit:hover span:last-child { transform: translateX(calc(-100% - 20px)); }
   .tabBtn { min-width: 140px; padding: 8px 16px; font-size: 12px; }
-  
+
   .profileTabs {
     gap: 6px; margin-bottom: 15px; flex-direction: column; width: 100%;
   }
@@ -1408,12 +1562,12 @@
     min-width: auto; width: 100%; max-width: 100%; flex: 1 1 100%;
     padding: 10px 20px; font-size: 13px;
   }
-  
+
   .studentCard { padding: 15px 12px; gap: 12px; }
   .studentAvatar { width: 80px; height: 80px; font-size: 28px; }
   .studentName { font-size: 20px; margin-bottom: 6px; }
   .studentDetails { font-size: 13px; }
-  
+
   .orderImageContainer { max-width: 90px; min-width: 70px; }
   .orderImageContainer img { width: 80%; height: 80%; }
   .productName { font-size: 18px; }
@@ -1421,7 +1575,7 @@
   .detailRow { font-size: 12px; gap: 6px; }
   .detailLabel { min-width: 45px; }
   .statusBadge { padding: 3px 8px; font-size: 11px; }
-  
+
   .profileExit { max-width: 160px; font-size: 11px; }
   .logImg { width: 24px; height: 24px; }
   .profileExit:hover .logImg { transform: translateX(calc(160px - 27px)); }
@@ -1435,4 +1589,686 @@
   .studentAvatar { width: 70px; height: 70px; font-size: 24px; }
   .studentName { font-size: 18px; }
   .studentDetails { font-size: 12px; }
+}
+/* Улучшенные стили для истории операций */
+.eventHistoryItem {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+  box-shadow: 0 2px 8px rgba(0, 52, 102, 0.06);
+  margin-bottom: 12px;
+}
+
+.eventHistoryItem:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 52, 102, 0.1);
+}
+
+.eventHistoryItem.participant { border-left-color: #003466; }
+.eventHistoryItem.winner { border-left-color: #28a745; }
+.eventHistoryItem.spectator { border-left-color: #dc3545; }
+
+.eventHistoryDate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+  padding: 12px;
+  background: linear-gradient(135deg, #f8f9fa, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.eventDay {
+  font-family: 'Kontora';
+  font-size: 32px;
+  font-weight: 800;
+  color: #003466;
+  line-height: 1;
+}
+
+.eventMonth {
+  font-family: 'Kontora';
+  font-size: 12px;
+  color: #6c757d;
+  text-transform: uppercase;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
+.eventHistoryInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.eventHistoryName {
+  font-family: 'Kontora';
+  font-size: clamp(16px, 2.5vw, 18px);
+  font-weight: 700;
+  color: #003466;
+  margin: 0 0 6px 0;
+  line-height: 1.3;
+}
+
+.eventHistoryRole {
+  font-family: 'Kontora';
+  font-size: clamp(13px, 2vw, 14px);
+  color: #6c757d;
+  margin: 0 0 6px 0;
+}
+
+.eventHistoryPoints {
+  font-family: 'Kontora';
+  font-size: clamp(15px, 2.5vw, 17px);
+  font-weight: 700;
+  margin: 0;
+}
+
+.eventHistoryBadge {
+  padding: 8px 20px;
+  border-radius: 25px;
+  font-family: 'Kontora';
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  min-width: 100px;
+  text-align: center;
+}
+
+.eventHistoryBadge.income {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.eventHistoryBadge.expense {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.historyTitle {
+  font-family: 'Kontora';
+  font-size: clamp(22px, 3vw, 26px);
+  font-weight: 700;
+  color: #003466;
+  margin: 0 0 24px 0;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(0, 52, 102, 0.1);
+}
+
+/* Spinner для загрузки */
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(0, 52, 102, 0.2);
+  border-top-color: #003466;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .eventHistoryItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .eventHistoryDate {
+    flex-direction: row;
+    gap: 8px;
+    min-width: auto;
+    padding: 8px 16px;
+  }
+  
+  .eventDay {
+    font-size: 24px;
+  }
+  
+  .eventHistoryBadge {
+    align-self: flex-start;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .eventHistoryItem {
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .eventHistoryName {
+    font-size: 15px;
+    word-break: break-word;
+  }
+  
+  .eventHistoryBadge {
+    font-size: 11px;
+    padding: 6px 16px;
+  }
+}
+
+
+УВЕДОМЛЕНИЯ
+/* Дополнительные стили для уведомлений */
+.devTools {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.toggleApiBtn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.toggleApiBtn:hover {
+  background: #5a6268;
+}
+
+.errorBanner {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  color: #856404;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notificationsHeader {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.markAllReadBtn {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.markAllReadBtn:hover {
+  background: #e7f1ff;
+}
+
+.notificationItem {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  border-bottom: 1px solid #e9ecef;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.notificationItem:hover {
+  background: #f8f9fa;
+}
+
+.notificationItem.unread {
+  background: #fff3e0;
+}
+
+.notificationIcon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #6c757d;
+}
+
+.notificationIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.notificationContent {
+  flex: 1;
+}
+
+.notificationTitle {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.notificationMessage {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
+  white-space: pre-line;
+}
+
+.notificationMeta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.notificationTime {
+  font-size: 12px;
+  color: #999;
+}
+
+.notificationPoints {
+  font-size: 12px;
+  color: #28a745;
+  font-weight: 500;
+  background: #e8f5e9;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.notificationUnreadDot {
+  position: absolute;
+  right: 16px;
+  top: 20px;
+  width: 8px;
+  height: 8px;
+  background: #ff4757;
+  border-radius: 50%;
+}
+
+.deleteNotificationBtn {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: #999;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.notificationItem:hover .deleteNotificationBtn {
+  opacity: 1;
+}
+
+.deleteNotificationBtn:hover {
+  background: #f8d7da;
+  color: #dc3545;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+}
+
+.noContent {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+
+.noContent svg {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.noContent h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: #495057;
+}
+
+.noContent p {
+  margin: 0;
+  font-size: 14px;
+}/* ============================================ */
+/* Уведомления - стиль как у карточек мероприятий */
+/* Акцентный цвет: #003466 */
+/* ============================================ */
+
+.notificationsTab {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Заголовок с кнопкой отметки всех */
+.notificationsHeader {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.markAllReadBtn {
+  background: none;
+  border: none;
+  color: #003466;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+
+.markAllReadBtn:hover {
+  background: rgba(0, 52, 102, 0.08);
+  color: #002244;
+}
+
+/* Карточка уведомления (как карточка мероприятия) */
+.notificationItem {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9ecef;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.notificationItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: #003466;
+}
+
+/* Непрочитанное уведомление */
+.notificationItem.unread {
+  background: linear-gradient(135deg, #f0f5fa 0%, #ffffff 100%);
+  border-left: 4px solid #003466;
+  border-left-width: 4px;
+}
+
+/* Иконка уведомления */
+.notificationIcon {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #003466;
+  transition: all 0.2s;
+}
+
+.notificationItem:hover .notificationIcon {
+  transform: scale(1.05);
+}
+
+.notificationIcon svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* Содержимое уведомления */
+.notificationContent {
+  flex: 1;
+}
+
+.notificationTitle {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #003466;
+}
+
+.notificationMessage {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #4a5568;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+/* Мета-информация (время, баллы) */
+.notificationMeta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.notificationTime {
+  font-size: 12px;
+  color: #8ba0b8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.notificationTime::before {
+  content: "🕐";
+  font-size: 12px;
+}
+
+.notificationPoints {
+  font-size: 12px;
+  font-weight: 600;
+  color: #28a745;
+  background: #e8f5e9;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.notificationPoints::before {
+  content: "⭐";
+  font-size: 11px;
+}
+
+/* Индикатор непрочитанного (точка) */
+.notificationUnreadDot {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 10px;
+  height: 10px;
+  background: #e74c3c;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px white;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 5px rgba(231, 76, 60, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+  }
+}
+
+/* Кнопка удаления */
+.deleteNotificationBtn {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  color: #8ba0b8;
+  opacity: 0;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notificationItem:hover .deleteNotificationBtn {
+  opacity: 1;
+}
+
+.deleteNotificationBtn:hover {
+  background: #fee;
+  color: #e74c3c;
+  transform: scale(1.1);
+}
+
+/* Состояние загрузки */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: #8ba0b8;
+  font-size: 16px;
+}
+
+/* Пустое состояние */
+.noContent {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e9ecef;
+}
+
+.noContent svg {
+  margin-bottom: 20px;
+  opacity: 0.4;
+  color: #8ba0b8;
+}
+
+.noContent h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #003466;
+}
+
+.noContent p {
+  margin: 0;
+  font-size: 14px;
+  color: #8ba0b8;
+}
+
+/* DevTools (только для разработки) */
+.devTools {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.toggleApiBtn {
+  background: #e9ecef;
+  color: #4a5568;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggleApiBtn:hover {
+  background: #dee2e6;
+  transform: scale(1.02);
+}
+
+.errorBanner {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  color: #856404;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ============================================ */
+/* Адаптивность для мобильных устройств */
+/* ============================================ */
+
+@media (max-width: 768px) {
+  .notificationItem {
+    padding: 16px;
+    gap: 12px;
+  }
+  
+  .notificationIcon {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .notificationIcon svg {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .notificationTitle {
+    font-size: 16px;
+    padding-right: 24px;
+  }
+  
+  .notificationMessage {
+    font-size: 13px;
+  }
+  
+  .notificationUnreadDot {
+    right: 16px;
+    top: 16px;
+  }
+  
+  .deleteNotificationBtn {
+    right: 16px;
+    bottom: 16px;
+  }
+  
+  .markAllReadBtn {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
 }

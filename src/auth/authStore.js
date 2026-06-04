@@ -1,6 +1,8 @@
+// src/auth/authStore.js
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import authService from '../authService.js';
+import { checkAuthAndRefresh } from './apiClient.js'; // ← прямой импорт
 
 const useAuthStore = create(
   persist(
@@ -68,26 +70,18 @@ const useAuthStore = create(
         }
       },
 
-      // 🔥 Proactive проверка при загрузке страницы (только один раз при старте)
+      // 🔥 Proactive проверка при загрузке страницы
       checkAuth: async () => {
         const storedUser = get().user;
         const storedAuth = get().isAuthenticated;
 
-        // 🔥 Если пользователь был авторизован (данные в сторе есть),
-        // проверяем актуальность токена и делаем рефреш при необходимости
         if (storedAuth && storedUser) {
           try {
-            // Импортируем checkAuthAndRefresh динамически чтобы избежать циклических зависимостей
-            const { checkAuthAndRefresh } = await import('./apiClient.js');
             console.log('[authStore] Running proactive auth check on page load...');
-
-            // Сценарий А или Б: checkAuthAndRefresh вернёт true
-            // Сценарий В: выбросит ошибку (logout уже вызван внутри apiClient)
             const isValid = await checkAuthAndRefresh();
 
             if (isValid) {
               console.log('[authStore] Auth check completed successfully');
-              // Получаем обновлённые данные пользователя из authService
               const updatedUser = authService.getUser();
               set({
                 isAuthenticated: true,
@@ -98,8 +92,6 @@ const useAuthStore = create(
               return;
             }
           } catch (err) {
-            // Сценарий В: Ошибка уже обработана в apiClient (вызван logout)
-            // Zustand state уже очищен через store.logout()
             console.log('[authStore] Auth check failed, user logged out');
             set({
               isAuthenticated: false,
@@ -111,7 +103,6 @@ const useAuthStore = create(
           }
         }
 
-        // Если не было сохранённых данных авторизации
         set({
           isAuthenticated: false,
           user: null,
@@ -128,6 +119,7 @@ const useAuthStore = create(
         authService.setUser(updatedUser);
         set({ user: updatedUser });
       },
+      
       forceLogout: () => {
          set({
             isAuthenticated: false,
@@ -152,16 +144,8 @@ if (typeof window !== 'undefined') {
   window.addEventListener('auth-logout', () => {
     console.log('[AuthStore] Received auth-logout event');
     const store = useAuthStore.getState();
-
-    // 1. Сбрасываем состояние в памяти
     store.forceLogout();
-
-    // 2. Явно удаляем ключ из localStorage, чтобы при перезагрузке не восстановилось старое
-    // Zustand persist иногда может не успеть синхронизироваться, если событие пришло извне
     localStorage.removeItem('auth-storage');
-
-    // 3. Опционально: перезагружаем страницу, чтобы сбросить все компоненты в начальное состояние
-    // Это самый надежный способ убедиться, что UI обновился
     window.location.reload();
   });
 }

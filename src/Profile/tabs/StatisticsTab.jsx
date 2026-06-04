@@ -1,11 +1,11 @@
 import React from 'react';
 import styles from './ProfileTabs.module.css';
-
+import PointsHistory from './PointsHistory'; // 🔹 импорт
 const StatisticsTab = () => {
   return (
     <div className={styles.statisticsTab}>
       {/* Основные показатели */}
-      <div className={styles.statsOverview}>
+      {/* <div className={styles.statsOverview}>
         <div className={styles.statCardModern}>
           <div className={`${styles.statCardIcon} ${styles.tournaments}`}>
             <svg width='32' height='32' viewBox='0 0 24 24' fill='currentColor'>
@@ -41,10 +41,10 @@ const StatisticsTab = () => {
             <div className={styles.statLabelMedium}>Текущий уровень</div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Достижения по местам */}
-      <div className={styles.statsAchievementsGrid}>
+      {/* <div className={styles.statsAchievementsGrid}>
         <div className={`${styles.achievementPlaceCard} ${styles.first}`}>
           <div className={styles.placeIcon}>🥇</div>
           <div className={styles.placeValue}>8</div>
@@ -65,78 +65,10 @@ const StatisticsTab = () => {
           <div className={styles.placeLabel}>Третьих мест</div>
           <div className={styles.placePercentage}>17%</div>
         </div>
-      </div>
+      </div> */}
 
       {/* История мероприятий */}
-      <div className={styles.statsEventsHistory}>
-        <h3 className={styles.historyTitle}>История мероприятий</h3>
-        <div className={styles.eventsHistoryList}>
-          <div className={styles.eventHistoryItem}>
-            <div className={styles.eventHistoryDate}>
-              <div className={styles.eventDay}>15</div>
-              <div className={styles.eventMonth}>Дек 2025</div>
-            </div>
-            <div className={styles.eventHistoryInfo}>
-              <h4 className={styles.eventHistoryName}>Гандбольный турнир</h4>
-              <p className={styles.eventHistoryRole}>Участник • 3 место 🥉</p>
-              <p className={styles.eventHistoryPoints}>+150 баллов</p>
-            </div>
-            <div className={`${styles.eventHistoryBadge} ${styles.participant}`}>Участник</div>
-          </div>
-
-          <div className={styles.eventHistoryItem}>
-            <div className={styles.eventHistoryDate}>
-              <div className={styles.eventDay}>20</div>
-              <div className={styles.eventMonth}>Ноя 2025</div>
-            </div>
-            <div className={styles.eventHistoryInfo}>
-              <h4 className={styles.eventHistoryName}>Шахматный турнир</h4>
-              <p className={styles.eventHistoryRole}>Участник • 1 место 🥇</p>
-              <p className={styles.eventHistoryPoints}>+200 баллов</p>
-            </div>
-            <div className={`${styles.eventHistoryBadge} ${styles.winner}`}>Победитель</div>
-          </div>
-
-          <div className={styles.eventHistoryItem}>
-            <div className={styles.eventHistoryDate}>
-              <div className={styles.eventDay}>10</div>
-              <div className={styles.eventMonth}>Ноя 2025</div>
-            </div>
-            <div className={styles.eventHistoryInfo}>
-              <h4 className={styles.eventHistoryName}>Баскетбол 3x3</h4>
-              <p className={styles.eventHistoryRole}>Болельщик</p>
-              <p className={styles.eventHistoryPoints}>+30 баллов</p>
-            </div>
-            <div className={`${styles.eventHistoryBadge} ${styles.spectator}`}>Болельщик</div>
-          </div>
-
-          <div className={styles.eventHistoryItem}>
-            <div className={styles.eventHistoryDate}>
-              <div className={styles.eventDay}>05</div>
-              <div className={styles.eventMonth}>Окт 2025</div>
-            </div>
-            <div className={styles.eventHistoryInfo}>
-              <h4 className={styles.eventHistoryName}>Лыжный марафон</h4>
-              <p className={styles.eventHistoryRole}>Участник • 2 место 🥈</p>
-              <p className={styles.eventHistoryPoints}>+175 баллов</p>
-            </div>
-            <div className={`${styles.eventHistoryBadge} ${styles.participant}`}>Участник</div>
-          </div>
-
-          <div className={styles.eventHistoryItem}>
-            <div className={styles.eventHistoryDate}>
-              <div className={styles.eventDay}>28</div>
-              <div className={styles.eventMonth}>Сен 2025</div>
-            </div>
-            <div className={styles.eventHistoryInfo}>
-              <h4 className={styles.eventHistoryName}>Волейбольный турнир</h4>
-              <p className={styles.eventHistoryRole}>Участник • 1 место 🥇</p>
-              <p className={styles.eventHistoryPoints}>+180 баллов</p>
-            </div>
-            <div className={`${styles.eventHistoryBadge} ${styles.winner}`}>Победитель</div>
-          </div>
-        </div>
-      </div>
+      <PointsHistory limit={10} />
     </div>
   );
 };
