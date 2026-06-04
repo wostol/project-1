@@ -23,6 +23,15 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
+    <script>
+  const redirectUrl = sessionStorage.getItem('gh-pages-redirect');
+  if (redirectUrl) {
+    sessionStorage.removeItem('gh-pages-redirect');
+    const path = new URL(redirectUrl).pathname;
+    // Восстанавливаем путь без перезагрузки страницы
+    window.history.replaceState(null, '', path);
+  }
+</script>
     <title>Сибирские львы</title>
   </head>
   <body>

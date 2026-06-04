@@ -2,7 +2,7 @@ import './App.css';
 import Header from './component/Header';
 import Footer from './component/Footer';
 import Layout from './component/Layout';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import EventsPage from './Events/EventsPage';
 import EventDetail from './Events/EventDetail';
 import ProfilePage from './Profile/ProfilePage';
@@ -66,7 +66,7 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <LoadingProvider>
         <AppContent />
       </LoadingProvider>

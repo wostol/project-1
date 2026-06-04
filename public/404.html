@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting...</title>
+  <script>
+    // Сохраняем оригинальный URL в sessionStorage
+    sessionStorage.setItem('gh-pages-redirect', window.location.href);
+    // Перенаправляем на корень репозитория
+    window.location.replace(window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '') + '/');
+  </script>
+</head>
+<body></body>
+</html>
